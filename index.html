@@ -9,9 +9,10 @@
   <title>Derin Koridor — Retro FPS</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="favicon.svg" />
-  <link rel="stylesheet" href="css/style.css?v=23" />
+  <link rel="stylesheet" href="css/style.css?v=24" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -64,7 +65,7 @@
     </div>
 
     <div id="overlay" class="overlay start-screen">
-      <img id="start-bg" class="start-bg" src="img/start-bg.png" alt="" draggable="false" />
+      <img id="start-bg" class="start-bg" src="img/start-bg.jpg" alt="" draggable="false" decoding="async" fetchpriority="low" />
       <div class="overlay-fx" aria-hidden="true">
         <div class="fx-scanlines"></div>
         <div class="fx-particles"></div>
@@ -114,6 +115,6 @@
     }
   }
   </script>
-  <script type="module" src="js/main.js?v=23"></script>
+  <script type="module" src="js/main.js?v=24"></script>
 </body>
 </html>

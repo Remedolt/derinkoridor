@@ -12,6 +12,8 @@ import {
   makeCeilingTexture,
   makeGrassTexture,
   makeDirtTexture,
+  makeBarkTexture,
+  makeLeafTexture,
 } from "./textures.js";
 
 export const CELL = 4;
@@ -71,31 +73,40 @@ function makeDoorTexture() {
   return tex;
 }
 
-function makeBahceSignTexture() {
+function makeBahceWallTexture(flipArrow = false) {
   const c = document.createElement("canvas");
-  c.width = 256;
-  c.height = 64;
+  c.width = 512;
+  c.height = 160;
   const ctx = c.getContext("2d");
-  ctx.fillStyle = "#5a3814";
-  ctx.fillRect(0, 0, 256, 64);
-  ctx.strokeStyle = "#c9a05a";
-  ctx.lineWidth = 5;
-  ctx.strokeRect(3, 3, 250, 58);
-  ctx.fillStyle = "#f2ddb0";
-  ctx.font = "bold 26px sans-serif";
+  if (flipArrow) {
+    ctx.translate(512, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.fillStyle = "#3a2410";
+  ctx.fillRect(0, 0, 512, 160);
+  ctx.fillStyle = "#6a4420";
+  ctx.fillRect(10, 10, 492, 140);
+  ctx.strokeStyle = "#e0c070";
+  ctx.lineWidth = 8;
+  ctx.strokeRect(16, 16, 480, 128);
+  ctx.fillStyle = "#f4e2b0";
+  ctx.font = "bold 64px monospace";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText("BAHÇE", 18, 34);
+  ctx.fillText("BAHÇE", 36, 84);
   ctx.beginPath();
-  ctx.moveTo(168, 16);
-  ctx.lineTo(236, 32);
-  ctx.lineTo(168, 48);
+  ctx.moveTo(340, 36);
+  ctx.lineTo(478, 80);
+  ctx.lineTo(340, 124);
   ctx.closePath();
-  ctx.fillStyle = "#e8c43a";
+  ctx.fillStyle = "#f0d040";
   ctx.fill();
+  ctx.fillStyle = "#3a2410";
+  ctx.fillRect(340, 68, 72, 24);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
+  tex.needsUpdate = true;
   return tex;
 }
 
@@ -112,28 +123,15 @@ export class Level {
     this.group = new THREE.Group();
     this.scene.add(this.group);
     this._audio = null;
+    this._assets = null;
   }
 
   setAudio(audio) {
     this._audio = audio;
   }
 
-  build() {
-    while (this.group.children.length) {
-      const ch = this.group.children[0];
-      this.group.remove(ch);
-      ch.traverse((o) => {
-        if (o.geometry) o.geometry.dispose();
-        if (o.material) {
-          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
-          else o.material.dispose();
-        }
-      });
-    }
-    this.wallBoxes.length = 0;
-    this.doors.length = 0;
-    this.spawnPoints = { player: null, enemies: [], health: [], ammo: [], armor: [] };
-    this.spawnPoints = this.spawnPoints;
+  _ensureAssets() {
+    if (this._assets) return this._assets;
 
     const stoneTex = makeStoneWallTexture();
     const metalTex = makeMetalWallTexture();
@@ -142,43 +140,87 @@ export class Level {
     const ceilTex = makeCeilingTexture();
     const grassTex = makeGrassTexture();
     const dirtTex = makeDirtTexture();
+    const barkTex = makeBarkTexture();
+    const leafTex = makeLeafTexture();
     const doorTex = makeDoorTexture();
     floorTex.repeat.set(this.cols, this.rows);
     ceilTex.repeat.set(this.cols, this.rows);
     grassTex.repeat.set(11, 10);
     dirtTex.repeat.set(2, 2);
 
-    const wallMatA = new THREE.MeshLambertMaterial({ map: stoneTex });
-    const wallMatB = new THREE.MeshStandardMaterial({
-      map: metalTex,
-      metalness: 0.55,
-      roughness: 0.42,
-      envMapIntensity: 0.65,
-    });
-    const wallMatC = new THREE.MeshStandardMaterial({
-      map: rustTex,
-      metalness: 0.25,
-      roughness: 0.72,
-      envMapIntensity: 0.4,
-    });
-    const floorMat = new THREE.MeshLambertMaterial({ map: floorTex });
-    const ceilMat = new THREE.MeshLambertMaterial({ map: ceilTex });
-    const grassMat = new THREE.MeshLambertMaterial({ map: grassTex });
-    const dirtMat = new THREE.MeshLambertMaterial({ map: dirtTex });
-    const barkMat = new THREE.MeshLambertMaterial({ color: 0x4a3420 });
-    const leafMat = new THREE.MeshLambertMaterial({ color: 0x2f6a2a });
-    const leafDarkMat = new THREE.MeshLambertMaterial({ color: 0x1e4a1c });
-    const flowerMats = [
-      new THREE.MeshLambertMaterial({ color: 0xc45a7a }),
-      new THREE.MeshLambertMaterial({ color: 0xd4a018 }),
-      new THREE.MeshLambertMaterial({ color: 0x6a8ad4 }),
-    ];
-    const doorMat = new THREE.MeshStandardMaterial({
-      map: doorTex,
-      metalness: 0.7,
-      roughness: 0.35,
-      envMapIntensity: 0.8,
-    });
+    this._assets = {
+      boxGeo: new THREE.BoxGeometry(CELL, CELL, CELL),
+      wallMatA: new THREE.MeshLambertMaterial({ map: stoneTex }),
+      wallMatB: new THREE.MeshLambertMaterial({ map: metalTex }),
+      wallMatC: new THREE.MeshLambertMaterial({ map: rustTex }),
+      floorMat: new THREE.MeshLambertMaterial({ map: floorTex }),
+      ceilMat: new THREE.MeshLambertMaterial({ map: ceilTex }),
+      grassMat: new THREE.MeshLambertMaterial({ map: grassTex }),
+      dirtMat: new THREE.MeshLambertMaterial({ map: dirtTex }),
+      barkMat: new THREE.MeshLambertMaterial({ map: barkTex }),
+      leafMat: new THREE.MeshLambertMaterial({ map: leafTex }),
+      leafDarkMat: new THREE.MeshLambertMaterial({ color: 0x1e4a1c, map: leafTex }),
+      flowerMats: [
+        new THREE.MeshLambertMaterial({ color: 0xc45a7a }),
+        new THREE.MeshLambertMaterial({ color: 0xd4a018 }),
+        new THREE.MeshLambertMaterial({ color: 0x6a8ad4 }),
+      ],
+      doorMat: new THREE.MeshLambertMaterial({ map: doorTex }),
+      frameMat: new THREE.MeshLambertMaterial({ color: 0x2a2e34 }),
+      bracketMat: new THREE.MeshLambertMaterial({ color: 0x444450 }),
+      flameMat: new THREE.MeshBasicMaterial({ color: 0xffcc88 }),
+      bulbMat: new THREE.MeshBasicMaterial({ color: 0xffe8c0 }),
+      shadeMat: new THREE.MeshLambertMaterial({ color: 0x2a2218 }),
+      signMatR: new THREE.MeshLambertMaterial({ map: makeBahceWallTexture(false) }),
+      signMatL: new THREE.MeshLambertMaterial({ map: makeBahceWallTexture(true) }),
+      signWood: new THREE.MeshLambertMaterial({ color: 0x4a3018 }),
+      waterMat: new THREE.MeshPhongMaterial({
+        color: 0x3a88aa,
+        transparent: true,
+        opacity: 0.78,
+        shininess: 90,
+        specular: 0xaad4ee,
+        depthWrite: false,
+      }),
+      stoneRim: new THREE.MeshLambertMaterial({ color: 0x8a8274 }),
+      poolBed: new THREE.MeshLambertMaterial({ color: 0x2a3a28 }),
+    };
+    return this._assets;
+  }
+
+  build() {
+    const shared = this._assets?.boxGeo;
+    while (this.group.children.length) {
+      const ch = this.group.children[0];
+      this.group.remove(ch);
+      ch.traverse((o) => {
+        if (o.geometry && o.geometry !== shared) o.geometry.dispose();
+      });
+    }
+    this.wallBoxes.length = 0;
+    this.doors.length = 0;
+    this.spawnPoints = { player: null, enemies: [], health: [], ammo: [], armor: [] };
+
+    const {
+      boxGeo,
+      wallMatA,
+      wallMatB,
+      wallMatC,
+      floorMat,
+      ceilMat,
+      grassMat,
+      dirtMat,
+      barkMat,
+      leafMat,
+      leafDarkMat,
+      flowerMats,
+      doorMat,
+      frameMat,
+      bracketMat,
+      flameMat,
+      bulbMat,
+      shadeMat,
+    } = this._ensureAssets();
 
     const worldW = this.cols * CELL;
     const worldD = this.rows * CELL;
@@ -196,7 +238,6 @@ export class Level {
     this.group.add(ceil);
 
     const gardenCells = [];
-    const boxGeo = new THREE.BoxGeometry(CELL, CELL, CELL);
     const leafW = CELL * 0.86;
     const leafH = CELL * 0.86;
     const leafT = 0.16;
@@ -215,32 +256,17 @@ export class Level {
           wall.frustumCulled = true;
           this.group.add(wall);
 
-          if ((x + z) % 5 === 0) {
+          if ((x + z) % 8 === 0) {
             const bracket = new THREE.Mesh(
               new THREE.BoxGeometry(0.15, 0.35, 0.15),
-              new THREE.MeshLambertMaterial({ color: 0x444450 })
+              bracketMat
             );
             bracket.position.set(wx + CELL * 0.45, CELL * 0.55, wz);
-            this.group.add(bracket);
-
-            const flame = new THREE.Mesh(
-              new THREE.SphereGeometry(0.2, 6, 6),
-              new THREE.MeshBasicMaterial({ color: 0xffcc88 })
-            );
+            const flame = new THREE.Mesh(new THREE.SphereGeometry(0.2, 6, 6), flameMat);
             flame.position.set(wx + CELL * 0.48, CELL * 0.72, wz);
-            this.group.add(flame);
-
-            const light = new THREE.PointLight(0xffaa66, 0.9, CELL * 5, 1.8);
-            light.position.copy(flame.position);
-            this.group.add(light);
+            this.group.add(bracket, flame);
           }
         } else if (cell === 6) {
-          const frameMat = new THREE.MeshStandardMaterial({
-            color: 0x2a2e34,
-            metalness: 0.6,
-            roughness: 0.45,
-            envMapIntensity: 0.5,
-          });
           const frameL = new THREE.Mesh(new THREE.BoxGeometry(0.42, CELL * 0.92, 0.42), frameMat);
           const frameR = frameL.clone();
           const frameT = new THREE.Mesh(new THREE.BoxGeometry(CELL, 0.55, CELL), wallMatA);
@@ -299,32 +325,31 @@ export class Level {
 
     if (gardenCells.length) {
       this._buildGarden(gardenCells, grassMat, dirtMat, barkMat, leafMat, leafDarkMat, flowerMats);
-      this._addGardenArrows(barkMat);
+      this._addGardenWallSigns();
     }
 
-    const amb = new THREE.AmbientLight(0xc0b098, 0.95);
+    const amb = new THREE.AmbientLight(0xc8b8a0, 1.05);
     this.group.add(amb);
-    const fill = new THREE.DirectionalLight(0xfff0e0, 0.6);
+    const fill = new THREE.DirectionalLight(0xfff2e0, 0.7);
     fill.position.set(20, 40, 12);
     this.group.add(fill);
-    const hemi = new THREE.HemisphereLight(0xffe8d0, 0x3a3020, 0.45);
+    const hemi = new THREE.HemisphereLight(0xffead8, 0x3a3020, 0.55);
     this.group.add(hemi);
 
     const lampSpots = [
-      [3, 3], [10, 5], [16, 3], [5, 9], [15, 9], [3, 13], [10, 13], [17, 13], [5, 17], [15, 17],
+      [3, 3], [10, 5], [16, 3], [5, 9], [15, 9], [3, 13], [10, 13], [17, 13],
     ];
     for (const [x, z] of lampSpots) {
       if (z >= this.rows || x >= this.cols) continue;
       if (this.grid[z][x] === 1 || this.grid[z][x] === 7) continue;
-      const lamp = new THREE.PointLight(0xffe2b8, 1.0, CELL * 7, 1.5);
-      lamp.position.set(x * CELL, CELL * 0.82, z * CELL);
+      const lamp = new THREE.PointLight(0xffe2b8, 1.15, CELL * 8, 1.4);
+      lamp.position.set(x * CELL, CELL * 0.78, z * CELL);
       this.group.add(lamp);
-      const bulb = new THREE.Mesh(
-        new THREE.BoxGeometry(0.35, 0.1, 0.35),
-        new THREE.MeshBasicMaterial({ color: 0xffe8c0 })
-      );
+      const shade = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.38, 0.18, 8), shadeMat);
+      shade.position.set(x * CELL, CELL * 0.9, z * CELL);
+      const bulb = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.22), bulbMat);
       bulb.position.copy(lamp.position);
-      this.group.add(bulb);
+      this.group.add(shade, bulb);
     }
   }
 
@@ -384,7 +409,9 @@ export class Level {
       crown.position.set(x, 1.35 * scale, z);
       const crown2 = new THREE.Mesh(new THREE.SphereGeometry(0.42 * scale, 6, 5), leafDarkMat);
       crown2.position.set(x + 0.22 * scale, 1.15 * scale, z + 0.12 * scale);
-      this.group.add(trunk, crown, crown2);
+      const crown3 = new THREE.Mesh(new THREE.SphereGeometry(0.36 * scale, 6, 5), leafMat);
+      crown3.position.set(x - 0.2 * scale, 1.22 * scale, z - 0.14 * scale);
+      this.group.add(trunk, crown, crown2, crown3);
     };
 
     const addBush = (x, z, scale) => {
@@ -420,29 +447,18 @@ export class Level {
     const poolCz = cz - CELL * 1.85;
     const poolW = CELL * 1.55;
     const poolD = CELL * 1.2;
-    const stone = new THREE.MeshLambertMaterial({ color: 0x8a8274 });
-    const bed = new THREE.Mesh(
-      new THREE.PlaneGeometry(poolW, poolD),
-      new THREE.MeshLambertMaterial({ color: 0x2a3a28 })
-    );
+    const { stoneRim, waterMat, poolBed } = this._ensureAssets();
+    const bed = new THREE.Mesh(new THREE.PlaneGeometry(poolW, poolD), poolBed);
     bed.rotation.x = -Math.PI / 2;
     bed.position.set(poolCx, 0.045, poolCz);
-    const water = new THREE.Mesh(
-      new THREE.PlaneGeometry(poolW * 0.92, poolD * 0.88),
-      new THREE.MeshLambertMaterial({
-        color: 0x3a88aa,
-        transparent: true,
-        opacity: 0.78,
-        depthWrite: false,
-      })
-    );
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(poolW * 0.92, poolD * 0.88), waterMat);
     water.rotation.x = -Math.PI / 2;
     water.position.set(poolCx, 0.1, poolCz);
-    const rimN = new THREE.Mesh(new THREE.BoxGeometry(poolW + 0.32, 0.16, 0.22), stone);
+    const rimN = new THREE.Mesh(new THREE.BoxGeometry(poolW + 0.32, 0.16, 0.22), stoneRim);
     const rimS = rimN.clone();
     rimN.position.set(poolCx, 0.12, poolCz - poolD / 2);
     rimS.position.set(poolCx, 0.12, poolCz + poolD / 2);
-    const rimW = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, poolD + 0.12), stone);
+    const rimW = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, poolD + 0.12), stoneRim);
     const rimE = rimW.clone();
     rimW.position.set(poolCx - poolW / 2, 0.12, poolCz);
     rimE.position.set(poolCx + poolW / 2, 0.12, poolCz);
@@ -473,33 +489,43 @@ export class Level {
     this.group.add(bench, legL, legR);
   }
 
-  _addGardenArrows(barkMat) {
-    const tex = makeBahceSignTexture();
-    const boardMat = new THREE.MeshLambertMaterial({
-      map: tex,
-      side: THREE.DoubleSide,
-    });
-    const spots = [
-      { x: 19, z: 7 },
-      { x: 19, z: 10 },
-      { x: 18, z: 13 },
+  _addGardenWallSigns() {
+    const { signMatR, signMatL, signWood } = this._ensureAssets();
+    const mounts = [
+      { gx: 8, gz: 8, face: "s" },
+      { gx: 15, gz: 8, face: "s" },
+      { gx: 19, gz: 6, face: "s" },
+      { gx: 17, gz: 14, face: "n" },
     ];
-    for (const s of spots) {
-      if (this.grid[s.z]?.[s.x] === 1 || this.grid[s.z]?.[s.x] === 6) continue;
-      const wx = s.x * CELL + 1.05;
-      const wz = s.z * CELL;
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.48, 0.12), barkMat);
-      post.position.set(wx, 0.74, wz);
-      const shaft = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.16, 0.3), barkMat);
-      shaft.position.set(wx + 0.28, 1.38, wz);
-      const head = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.46, 4), barkMat);
-      head.rotation.z = -Math.PI / 2;
-      head.position.set(wx + 0.98, 1.38, wz);
-      const board = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.28), boardMat);
-      board.position.set(wx - 0.18, 1.4, wz);
-      board.rotation.y = -Math.PI / 2;
-      this.group.add(post, shaft, head, board);
+    for (const m of mounts) {
+      if (this.grid[m.gz]?.[m.gx] !== 1) continue;
+      const mat = m.face === "n" || m.face === "e" ? signMatL : signMatR;
+      this._mountWallPlaque(m.gx, m.gz, m.face, mat, signWood);
     }
+  }
+
+  _mountWallPlaque(gx, gz, face, boardMat, woodMat) {
+    const wx = gx * CELL;
+    const wz = gz * CELL;
+    const inset = CELL / 2 + 0.04;
+    const back = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.56, 0.07), woodMat);
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(1.58, 0.46), boardMat);
+    board.position.z = 0.04;
+    const g = new THREE.Group();
+    g.add(back, board);
+    g.position.set(wx, 1.62, wz);
+    if (face === "s") g.position.z = wz + inset;
+    else if (face === "n") {
+      g.position.z = wz - inset;
+      g.rotation.y = Math.PI;
+    } else if (face === "e") {
+      g.position.x = wx + inset;
+      g.rotation.y = Math.PI / 2;
+    } else {
+      g.position.x = wx - inset;
+      g.rotation.y = -Math.PI / 2;
+    }
+    this.group.add(g);
   }
 
   /**

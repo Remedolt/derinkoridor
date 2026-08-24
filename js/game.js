@@ -3,12 +3,6 @@
  */
 
 import * as THREE from "three";
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
-import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { Level } from "./level.js";
 import { Input } from "./input.js";
 import { Player } from "./player.js";
@@ -35,28 +29,28 @@ export class Game {
       antialias: false,
       powerPreference: "high-performance",
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
     this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
-    this.renderer.setClearColor(0x5a7a9a);
+    this.renderer.toneMappingExposure = 1.12;
+    this.renderer.setClearColor(0x1a1410);
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x2a3028, 0.014);
+    this.scene.fog = new THREE.FogExp2(0x1c1814, 0.012);
 
     this.camera = new THREE.PerspectiveCamera(
       70,
       window.innerWidth / window.innerHeight,
       0.1,
-      160
+      140
     );
 
+    const envScene = new THREE.Scene();
+    envScene.add(new THREE.HemisphereLight(0xfff2e4, 0x3a2a18, 1));
     const pmrem = new THREE.PMREMGenerator(this.renderer);
-    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    this.scene.environment = pmrem.fromScene(envScene, 0.1).texture;
     pmrem.dispose();
-
-    this._initComposer();
 
     this.level = new Level(this.scene);
     this.player = new Player(this.camera, this.level);
@@ -73,32 +67,6 @@ export class Game {
     this._onResize = this._onResize.bind(this);
     this._frame = this._frame.bind(this);
     this._onEsc = this._onEsc.bind(this);
-  }
-
-  _initComposer() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const pr = this.renderer.getPixelRatio();
-    const isTouch =
-      "ontouchstart" in window || (navigator.maxTouchPoints || 0) > 0;
-
-    this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-
-    const bloomStrength = isTouch ? 0.12 : 0.22;
-    this.bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(w, h),
-      bloomStrength,
-      0.35,
-      0.82
-    );
-    this.composer.addPass(this.bloomPass);
-
-    if (!isTouch) {
-      this.composer.addPass(new SMAAPass(w * pr, h * pr));
-    }
-
-    this.composer.addPass(new OutputPass());
   }
 
   init() {
@@ -122,6 +90,15 @@ export class Game {
     this.running = true;
     this.lastTime = performance.now();
     requestAnimationFrame(this._frame);
+    setTimeout(() => this._warmup(), 0);
+  }
+
+  _warmup() {
+    if (this._warmed || this.state !== "menu") return;
+    this.level.build();
+    this._warmed = true;
+    this._freshBuild = true;
+    this.renderer.compile(this.scene, this.camera);
   }
 
   start() {
@@ -131,7 +108,7 @@ export class Game {
     this._resetLevel();
     this.state = "playing";
     this.ui.showPlaying();
-    this.audio.startMusic();
+    requestAnimationFrame(() => this.audio.startMusic());
     if (this.input.isTouch) this.mobile.enable();
     else {
       this.mobile.disable();
@@ -143,7 +120,9 @@ export class Game {
     this.enemies.clear();
     this.pickups.clear();
     this.weapons.clearEffects();
-    this.level.build();
+    if (this._freshBuild) this._freshBuild = false;
+    else this.level.build();
+    this._warmed = true;
     this.player.spawn(this.level.spawnPoints.player);
     this.weapons.reset();
     this.pickups.spawn(
@@ -196,7 +175,6 @@ export class Game {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    this.composer.setSize(w, h);
   }
 
   _onEsc(e) {
@@ -300,7 +278,10 @@ export class Game {
       }
     }
 
-    this.composer.render();
+    if (this.state === "playing" || this.state === "paused") {
+      this.renderer.render(this.scene, this.camera);
+    }
+
     this.input.endFrame();
   }
 }

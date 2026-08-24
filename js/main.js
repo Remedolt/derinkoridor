@@ -2,13 +2,13 @@
  * Derin Koridorlar — entry point
  */
 
-import { Game } from "./game.js";
-
 const canvas = document.getElementById("game-canvas");
-const game = new Game(canvas);
-game.init();
+const startBtn = document.getElementById("btn-start");
+if (startBtn) {
+  startBtn.disabled = true;
+  startBtn.textContent = "YÜKLENİYOR…";
+}
 
-// Prevent default gestures that break FPS control on mobile
 document.addEventListener(
   "touchmove",
   (e) => {
@@ -18,3 +18,8 @@ document.addEventListener(
 );
 
 window.addEventListener("contextmenu", (e) => e.preventDefault());
+
+const { Game } = await import("./game.js");
+const game = new Game(canvas);
+game.init();
+if (startBtn) startBtn.disabled = false;
