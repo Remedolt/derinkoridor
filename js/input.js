@@ -37,6 +37,7 @@ export class Input {
     this._onMouseDown = this._onMouseDown.bind(this);
     this._onMouseUp = this._onMouseUp.bind(this);
     this._onPointerLockChange = this._onPointerLockChange.bind(this);
+    this.onUnlock = null;
   }
 
   detectTouch() {
@@ -73,7 +74,9 @@ export class Input {
   }
 
   _onPointerLockChange() {
+    const wasLocked = this.pointerLocked;
     this.pointerLocked = document.pointerLockElement === this.canvas;
+    if (wasLocked && !this.pointerLocked) this.onUnlock?.();
   }
 
   _onKeyDown(e) {

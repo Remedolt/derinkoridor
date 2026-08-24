@@ -71,6 +71,10 @@ export class UI {
     this.muzzleFlash.src = this._sprites.muzzle;
     this.weaponSprite.src = this._sprites.shotgun;
     this.playerName = "Oyuncu";
+    this.pauseOverlay = document.getElementById("pause-overlay");
+    this.btnResume = document.getElementById("btn-resume");
+    this.btnFullscreen = document.getElementById("btn-fullscreen");
+    this.btnQuit = document.getElementById("btn-quit");
   }
 
   getPlayerName() {
@@ -123,8 +127,8 @@ export class UI {
     this.sub.textContent = "KARANLIK TESİS LABİRENTİ";
     this.msg.innerHTML = `
       Üç dalga düşmanı temizle. Tesis labirentinden sağ çık.<br />
-      <span class="desktop-hint">WASD + Fare · Sol tık Ateş · R Şarjör · Boşluk Zıpla · E Kapı · 1–6 Silah</span>
-      <span class="mobile-hint">Çift joystick · Ateş / Zıpla / Şarjör / KAPİ · SİLAH ile döngü</span>
+      <span class="desktop-hint">WASD + Fare · Sol tık Ateş · R Şarjör · Boşluk Zıpla · E Kapı · ESC Duraklat · 1–6 Silah</span>
+      <span class="mobile-hint">Çift joystick · Ateş / Zıpla / Şarjör / KAPİ · SİLAH · DURDUR</span>
     `;
     if (this.nameRow) this.nameRow.classList.remove("hidden");
     if (this.nameInput && !this.nameInput.value) this.nameInput.value = "Oyuncu";
@@ -141,6 +145,23 @@ export class UI {
     this.overlay.classList.add("hidden");
     this.overlay.classList.remove("start-screen");
     this.hud.classList.remove("hidden");
+    this.hidePause();
+  }
+
+  showPause(handlers) {
+    if (!this.pauseOverlay) return;
+    this.pauseOverlay.classList.remove("hidden");
+    this.pauseOverlay.setAttribute("aria-hidden", "false");
+    if (this.btnResume) this.btnResume.onclick = () => handlers?.onResume?.();
+    if (this.btnFullscreen) this.btnFullscreen.onclick = () => handlers?.onFullscreen?.();
+    if (this.btnQuit) this.btnQuit.onclick = () => handlers?.onQuit?.();
+    this.btnResume?.focus();
+  }
+
+  hidePause() {
+    if (!this.pauseOverlay) return;
+    this.pauseOverlay.classList.add("hidden");
+    this.pauseOverlay.setAttribute("aria-hidden", "true");
   }
 
   showWaveBanner(wave, maxWaves) {

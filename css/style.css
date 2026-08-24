@@ -702,3 +702,93 @@ body:not(.is-touch) .mobile-hint {
     font-size: 0.6rem;
   }
 }
+
+/* —— Pause (orange) —— */
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(6, 4, 2, 0.62);
+  pointer-events: auto;
+}
+
+.pause-card {
+  width: min(22rem, 92vw);
+  padding: 1.75rem 1.5rem 1.4rem;
+  border-radius: 1.15rem;
+  background: #141210;
+  border: 2px solid #ff8a2a;
+  box-shadow:
+    0 0 0 1px rgba(255, 138, 42, 0.25),
+    0 0 28px rgba(255, 110, 20, 0.45),
+    0 18px 40px rgba(0, 0, 0, 0.55);
+  text-align: center;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.pause-card h2 {
+  margin: 0 0 0.45rem;
+  font-size: clamp(1.6rem, 5vw, 2.05rem);
+  font-weight: 700;
+  color: #fff8f0;
+  letter-spacing: -0.02em;
+}
+
+.pause-sub {
+  margin: 0 0 1.25rem;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: rgba(255, 244, 230, 0.88);
+}
+
+.pause-btn {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.65rem;
+  padding: 0.78rem 1rem;
+  border-radius: 0.7rem;
+  font-family: inherit;
+  font-size: 1.02rem;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.pause-btn-primary {
+  color: #1a0c04;
+  background: #ff8a2a;
+  border: 2px solid #ff8a2a;
+}
+
+.pause-btn-primary:hover,
+.pause-btn-primary:focus-visible {
+  background: #ff9a44;
+  border-color: #ff9a44;
+}
+
+.pause-btn-ghost {
+  color: #fff8f0;
+  background: transparent;
+  border: 2px solid #ff8a2a;
+}
+
+.pause-btn-ghost:hover,
+.pause-btn-ghost:focus-visible {
+  background: rgba(255, 138, 42, 0.12);
+}
+
+.pause-btn-quit {
+  color: #ff7a6a;
+  background: transparent;
+  border: 2px solid #ff7a6a;
+  margin-bottom: 0;
+}
+
+.pause-btn-quit:hover,
+.pause-btn-quit:focus-visible {
+  background: rgba(255, 80, 70, 0.12);
+}

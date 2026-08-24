@@ -72,6 +72,7 @@ export class Game {
     this.running = false;
     this._onResize = this._onResize.bind(this);
     this._frame = this._frame.bind(this);
+    this._onEsc = this._onEsc.bind(this);
   }
 
   _initComposer() {
@@ -103,7 +104,11 @@ export class Game {
   init() {
     this.input.detectTouch();
     this.input.attach();
+    this.input.onUnlock = () => {
+      if (this.state === "playing" && !this.input.isTouch) this.pause();
+    };
     window.addEventListener("resize", this._onResize);
+    window.addEventListener("keydown", this._onEsc);
     this.canvas.addEventListener("click", () => {
       if (this.state === "playing" && !this.input.isTouch) {
         this.input.requestPointerLock();
@@ -168,6 +173,7 @@ export class Game {
   _endGame(win) {
     this.state = win ? "win" : "dead";
     this.awaitingNextWave = false;
+    this.ui.hidePause();
     if (document.pointerLockElement) document.exitPointerLock();
     this.mobile.disable();
     this.audio.stopMusic();
@@ -185,6 +191,55 @@ export class Game {
     this.composer.setSize(w, h);
   }
 
+  _onEsc(e) {
+    if (e.code !== "Escape") return;
+    if (this.state === "paused") {
+      e.preventDefault();
+      this.resume();
+    }
+  }
+
+  pause() {
+    if (this.state !== "playing") return;
+    this.state = "paused";
+    this.input.fire = false;
+    this.input.moveX = 0;
+    this.input.moveZ = 0;
+    if (document.pointerLockElement) document.exitPointerLock();
+    this.audio.pauseMusic();
+    this.ui.showPause({
+      onResume: () => this.resume(),
+      onFullscreen: () => this._toggleFullscreen(),
+      onQuit: () => this._quitToMenu(),
+    });
+  }
+
+  resume() {
+    if (this.state !== "paused") return;
+    this.state = "playing";
+    this.ui.hidePause();
+    this.audio.resumeMusic();
+    if (!this.input.isTouch) this.input.requestPointerLock();
+  }
+
+  _toggleFullscreen() {
+    const root = document.documentElement;
+    if (!document.fullscreenElement) {
+      root.requestFullscreen?.() || root.webkitRequestFullscreen?.();
+    } else {
+      document.exitFullscreen?.() || document.webkitExitFullscreen?.();
+    }
+  }
+
+  _quitToMenu() {
+    this.state = "menu";
+    this.ui.hidePause();
+    if (document.pointerLockElement) document.exitPointerLock();
+    this.mobile.disable();
+    this.audio.stopMusic();
+    this.ui.showStart(() => this.start());
+  }
+
   _frame(now) {
     if (!this.running) return;
     requestAnimationFrame(this._frame);
@@ -194,6 +249,12 @@ export class Game {
 
     this.enemies.flushDead();
     this.input.beginFrame();
+
+    if (this.input._pauseRequest) {
+      this.input._pauseRequest = false;
+      if (this.state === "playing") this.pause();
+      else if (this.state === "paused") this.resume();
+    }
 
     if (this.input._cycleWeapon) {
       this.weapons.cycle();

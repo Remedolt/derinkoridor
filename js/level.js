@@ -321,11 +321,19 @@ export class Level {
     skyHemi.position.set(cx, 6, cz);
     this.group.add(skyHemi);
 
+    // Sky only over the garden opening — a large sphere clipped through indoor walls.
     const sky = new THREE.Mesh(
-      new THREE.SphereGeometry(36, 16, 12),
-      new THREE.MeshBasicMaterial({ color: 0x6a8eb4, side: THREE.BackSide, fog: false })
+      new THREE.PlaneGeometry(w + 1.2, d + 1.2),
+      new THREE.MeshBasicMaterial({
+        color: 0x6a8eb4,
+        side: THREE.DoubleSide,
+        fog: false,
+        depthWrite: false,
+      })
     );
-    sky.position.set(cx, 10, cz);
+    sky.rotation.x = Math.PI / 2;
+    sky.position.set(cx, 18, cz);
+    sky.renderOrder = -1;
     this.group.add(sky);
 
     const addTree = (x, z, scale) => {

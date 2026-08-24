@@ -114,6 +114,22 @@ export class AudioSynth {
     }, 450);
   }
 
+  pauseMusic() {
+    if (!this.ctx || !this._musicOn) return;
+    const t = this.ctx.currentTime;
+    this.musicGain.gain.cancelScheduledValues(t);
+    this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, t);
+    this.musicGain.gain.linearRampToValueAtTime(0.03, t + 0.12);
+  }
+
+  resumeMusic() {
+    if (!this.ctx || !this._musicOn) return;
+    const t = this.ctx.currentTime;
+    this.musicGain.gain.cancelScheduledValues(t);
+    this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, t);
+    this.musicGain.gain.linearRampToValueAtTime(0.22, t + 0.2);
+  }
+
   _keep(node) {
     this._musicNodes.push(node);
     return node;

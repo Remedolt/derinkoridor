@@ -72,6 +72,11 @@ export class MobileControls {
       e.preventDefault();
       this.input._cycleWeapon = true;
     });
+    this.btnPause = document.getElementById("btn-pause");
+    this.btnPause?.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      this.input._pauseRequest = true;
+    });
   }
 
   disable() {
