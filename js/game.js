@@ -116,12 +116,16 @@ export class Game {
     });
 
     this.ui.showStart(() => this.start());
+    document.getElementById("btn-menu-fullscreen")?.addEventListener("click", () => {
+      this._enterFullscreen();
+    });
     this.running = true;
     this.lastTime = performance.now();
     requestAnimationFrame(this._frame);
   }
 
   start() {
+    this._enterFullscreen();
     this.audio.unlock();
     this.level.setAudio(this.audio);
     this._resetLevel();
@@ -142,7 +146,11 @@ export class Game {
     this.level.build();
     this.player.spawn(this.level.spawnPoints.player);
     this.weapons.reset();
-    this.pickups.spawn(this.level.spawnPoints.health, this.level.spawnPoints.ammo);
+    this.pickups.spawn(
+      this.level.spawnPoints.health,
+      this.level.spawnPoints.ammo,
+      this.level.spawnPoints.armor
+    );
     this.wave = 1;
     this.waveCooldown = 0;
     this.awaitingNextWave = false;
@@ -222,13 +230,24 @@ export class Game {
     if (!this.input.isTouch) this.input.requestPointerLock();
   }
 
-  _toggleFullscreen() {
+  _enterFullscreen() {
     const root = document.documentElement;
-    if (!document.fullscreenElement) {
-      root.requestFullscreen?.() || root.webkitRequestFullscreen?.();
-    } else {
-      document.exitFullscreen?.() || document.webkitExitFullscreen?.();
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    const req = root.requestFullscreen || root.webkitRequestFullscreen;
+    try {
+      const result = req?.call(root);
+      if (result && typeof result.catch === "function") result.catch(() => {});
+    } catch {
+      /* tarayıcı reddettiyse oyunu yine de başlat */
     }
+  }
+
+  _toggleFullscreen() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      document.exitFullscreen?.() || document.webkitExitFullscreen?.();
+      return;
+    }
+    this._enterFullscreen();
   }
 
   _quitToMenu() {

@@ -1,6 +1,6 @@
 /**
  * Derin Koridorlar — procedural labyrinth + E-key doors
- * Grid: 0 empty, 1 wall, 2 spawn, 3 enemy, 4 health, 5 ammo, 6 door, 7 garden
+ * Grid: 0 empty, 1 wall, 2 spawn, 3 enemy, 4 health, 5 ammo, 6 door, 7 garden, 8 armor
  */
 
 import * as THREE from "three";
@@ -24,19 +24,19 @@ const MAP = [
   [1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,3,0,0,0,0,1,0,1,0,0,3,0,0,0,0,3,0,1,1,1,1,1,1,1,1,1,1,1],
   [1,1,1,1,6,1,1,0,1,0,1,1,1,0,1,1,6,1,1,1,1,7,7,7,7,7,7,7,7,7,1],
-  [1,0,3,0,0,1,4,0,0,3,0,0,0,0,3,1,0,0,3,0,6,7,7,7,7,7,7,7,7,7,1],
+  [1,0,3,0,0,1,8,0,0,3,0,0,0,0,3,1,0,0,3,0,6,7,7,7,7,7,7,7,7,7,1],
   [1,0,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,1],
   [1,0,0,0,3,0,0,0,0,0,3,0,0,3,0,0,0,0,0,0,1,7,7,7,4,7,7,7,7,7,1],
   [1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,6,7,7,3,7,7,3,7,7,7,1],
-  [1,3,0,5,1,0,3,0,0,3,0,0,3,0,0,0,1,4,0,3,1,7,7,7,7,7,7,7,7,7,1],
+  [1,3,0,5,1,0,3,0,0,3,0,0,3,0,0,0,1,8,0,3,1,7,7,7,7,7,7,7,7,7,1],
   [1,1,1,6,1,1,1,0,1,1,0,1,1,0,1,1,1,6,1,1,1,7,7,7,7,7,7,7,7,7,1],
-  [1,0,0,0,3,0,0,0,1,0,3,0,1,0,0,3,0,0,0,0,6,7,7,7,7,7,7,7,7,7,1],
+  [1,0,0,0,3,0,0,0,1,0,3,0,1,0,0,3,0,0,0,8,6,7,7,7,7,7,7,7,7,7,1],
   [1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,1],
   [1,0,0,3,0,0,1,0,3,0,1,0,0,0,1,0,0,3,0,0,1,7,7,7,5,7,7,7,7,7,1],
   [1,1,1,1,1,6,1,1,1,0,1,1,1,0,1,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,5,0,3,0,0,0,0,0,3,0,3,0,0,0,0,3,0,0,5,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,1,1,1,1,0,1,1,1,3,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1],
-  [1,4,0,0,3,0,3,0,0,0,0,0,0,3,3,0,0,0,0,4,1,1,1,1,1,1,1,1,1,1,1],
+  [1,4,0,0,3,0,3,0,0,0,0,0,0,3,3,0,0,0,0,8,1,1,1,1,1,1,1,1,1,1,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
@@ -79,7 +79,7 @@ export class Level {
     this.grid = MAP.map((r) => r.slice());
     this.wallBoxes = [];
     this.doors = [];
-    this.spawnPoints = { player: null, enemies: [], health: [], ammo: [] };
+    this.spawnPoints = { player: null, enemies: [], health: [], ammo: [], armor: [] };
     this.spawnPoints = this.spawnPoints;
     this.group = new THREE.Group();
     this.scene.add(this.group);
@@ -104,7 +104,7 @@ export class Level {
     }
     this.wallBoxes.length = 0;
     this.doors.length = 0;
-    this.spawnPoints = { player: null, enemies: [], health: [], ammo: [] };
+    this.spawnPoints = { player: null, enemies: [], health: [], ammo: [], armor: [] };
     this.spawnPoints = this.spawnPoints;
 
     const stoneTex = makeStoneWallTexture();
@@ -257,6 +257,8 @@ export class Level {
           this.spawnPoints.health.push(new THREE.Vector3(wx, 0.6, wz));
         } else if (cell === 5) {
           this.spawnPoints.ammo.push(new THREE.Vector3(wx, 0.5, wz));
+        } else if (cell === 8) {
+          this.spawnPoints.armor.push(new THREE.Vector3(wx, 0.55, wz));
         } else if (cell === 7) {
           gardenCells.push({ wx, wz, x, z });
         }

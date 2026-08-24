@@ -23,6 +23,18 @@ function makePickupMesh(kind) {
     crossV.position.z = 0.28;
     crossH.position.z = 0.28;
     g.add(crossV, crossH);
+  } else if (kind === "armor") {
+    const vest = new THREE.Mesh(
+      new THREE.BoxGeometry(0.58, 0.7, 0.32),
+      new THREE.MeshLambertMaterial({ color: 0x2a88cc })
+    );
+    g.add(vest);
+    const plate = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 0.38, 0.12),
+      new THREE.MeshBasicMaterial({ color: 0x66e0ff })
+    );
+    plate.position.z = 0.18;
+    g.add(plate);
   } else {
     const box = new THREE.Mesh(
       new THREE.BoxGeometry(0.6, 0.4, 0.4),
@@ -44,7 +56,7 @@ export class PickupManager {
     this.items = [];
   }
 
-  spawn(healthPositions, ammoPositions) {
+  spawn(healthPositions, ammoPositions, armorPositions = []) {
     this.clear();
     for (const p of healthPositions) {
       const mesh = makePickupMesh("health");
@@ -57,6 +69,12 @@ export class PickupManager {
       mesh.position.copy(p);
       this.scene.add(mesh);
       this.items.push({ kind: "ammo", mesh, amount: 12, taken: false });
+    }
+    for (const p of armorPositions) {
+      const mesh = makePickupMesh("armor");
+      mesh.position.copy(p);
+      this.scene.add(mesh);
+      this.items.push({ kind: "armor", mesh, amount: 50, taken: false });
     }
   }
 
@@ -88,6 +106,10 @@ export class PickupManager {
           player.heal(it.amount);
           audio.play("pickup");
           ui?.flashPickup("SAĞLIK PAKETİ ALDIN!");
+        } else if (it.kind === "armor") {
+          player.addArmor(it.amount);
+          audio.play("pickup");
+          ui?.flashPickup("ZIRH ALDIN!");
         } else {
           weapons.addAmmo(it.amount);
           audio.play("pickup");

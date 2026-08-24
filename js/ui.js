@@ -53,6 +53,7 @@ export class UI {
     this.msg = document.getElementById("overlay-msg");
     this.btn = document.getElementById("btn-start");
     this.hpEl = document.getElementById("hp-value");
+    this.armorEl = document.getElementById("armor-value");
     this.ammoEl = document.getElementById("ammo-value");
     this.weaponEl = document.getElementById("weapon-value");
     this.scoreEl = document.getElementById("score-value");
@@ -66,6 +67,7 @@ export class UI {
     this.scoreboardEl = document.getElementById("scoreboard");
     this.nameRow = document.getElementById("name-row");
     this._lastHp = 100;
+    this._lastArmor = 0;
     this._bobT = 0;
     this._sprites = getWeaponSprites();
     this.muzzleFlash.src = this._sprites.muzzle;
@@ -124,7 +126,10 @@ export class UI {
     this.overlay.classList.remove("hidden");
     this.overlay.classList.add("start-screen");
     this.title.textContent = "DERİN KORİDORLAR";
-    this.sub.textContent = "KARANLIK TESİS LABİRENTİ";
+    if (this.sub) {
+      this.sub.textContent = "";
+      this.sub.classList.add("hidden");
+    }
     this.msg.innerHTML = `
       Üç dalga düşmanı temizle. Tesis labirentinden sağ çık.<br />
       <span class="desktop-hint">WASD + Fare · Sol tık Ateş · R Şarjör · Boşluk Zıpla · E Kapı · ESC Duraklat · 1–6 Silah</span>
@@ -178,7 +183,10 @@ export class UI {
     this.overlay.classList.remove("hidden");
     this.overlay.classList.remove("start-screen");
     this.title.textContent = "SİSTEM ARIZASI";
-    this.sub.textContent = "OPERATÖR DÜŞTÜ";
+    if (this.sub) {
+      this.sub.classList.remove("hidden");
+      this.sub.textContent = "OPERATÖR DÜŞTÜ";
+    }
     this.msg.innerHTML = `Skor: <strong>${score}</strong><br />Tesis bir birimi daha yuttu.`;
     if (this.nameRow) this.nameRow.classList.add("hidden");
     this._renderScoreboard(score);
@@ -193,7 +201,10 @@ export class UI {
     this.overlay.classList.remove("hidden");
     this.overlay.classList.remove("start-screen");
     this.title.textContent = "BÖLGE TEMİZLENDİ";
-    this.sub.textContent = "ÜÇ DALGA TAMAMLANDI";
+    if (this.sub) {
+      this.sub.classList.remove("hidden");
+      this.sub.textContent = "ÜÇ DALGA TAMAMLANDI";
+    }
     this.msg.innerHTML = `Son skor: <strong>${score}</strong><br />Tahliye koridoru açıldı.`;
     if (this.nameRow) this.nameRow.classList.add("hidden");
     this._renderScoreboard(score);
@@ -204,11 +215,12 @@ export class UI {
 
   update(player, moving = false, dt = 0.016) {
     this.hpEl.textContent = `${Math.ceil(player.hp)}%`;
+    if (this.armorEl) this.armorEl.textContent = String(Math.max(0, Math.ceil(player.armor)));
     this.scoreEl.textContent = String(player.score);
 
     this.face.classList.toggle("hurt", player.hp < 40);
 
-    if (player.hp < this._lastHp) {
+    if (player.hp < this._lastHp || player.armor < this._lastArmor) {
       this.vignette.style.opacity = "1";
       clearTimeout(this._vigTimer);
       this._vigTimer = setTimeout(() => {
@@ -216,6 +228,7 @@ export class UI {
       }, 180);
     }
     this._lastHp = player.hp;
+    this._lastArmor = player.armor;
 
     if (moving && !this.weaponView.classList.contains("recoil")) {
       this._bobT += dt * 10;

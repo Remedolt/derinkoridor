@@ -21,6 +21,8 @@ export class Player {
     this.onGround = true;
     this.hp = 100;
     this.maxHp = 100;
+    this.armor = 0;
+    this.maxArmor = 200;
     this.score = 0;
     this.alive = true;
     this.radius = 0.55;
@@ -39,6 +41,7 @@ export class Player {
     this.velocityY = 0;
     this.onGround = true;
     this.hp = this.maxHp;
+    this.armor = 0;
     this.score = 0;
     this.alive = true;
     this.shake = 0;
@@ -47,7 +50,13 @@ export class Player {
 
   takeDamage(amount) {
     if (!this.alive) return;
-    this.hp = Math.max(0, this.hp - amount);
+    let dmg = amount;
+    if (this.armor > 0) {
+      const soaked = Math.min(this.armor, dmg);
+      this.armor -= soaked;
+      dmg -= soaked;
+    }
+    if (dmg > 0) this.hp = Math.max(0, this.hp - dmg);
     this.shake = Math.min(1, this.shake + 0.45);
     if (this.hp <= 0) {
       this.alive = false;
@@ -57,6 +66,10 @@ export class Player {
 
   heal(amount) {
     this.hp = Math.min(this.maxHp, this.hp + amount);
+  }
+
+  addArmor(amount) {
+    this.armor = Math.min(this.maxArmor, this.armor + amount);
   }
 
   update(dt, input) {
