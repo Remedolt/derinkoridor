@@ -17,27 +17,27 @@ import {
 export const CELL = 4;
 
 const MAP = [
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  [1,2,0,0,0,0,1,0,3,0,0,0,3,0,1,0,0,3,0,4,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,1,3,0,0,0,0,0,0,5,0,1,0,0,0,0,3,1,0,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,0,3,0,0,0,0,1,0,1,0,0,3,0,0,0,0,3,0,1,1,1,1,1,1,1,1,1,1,1],
-  [1,1,1,1,6,1,1,0,1,0,1,1,1,0,1,1,6,1,1,1,1,7,7,7,7,7,7,7,7,7,1],
-  [1,0,3,0,0,1,8,0,0,3,0,0,0,0,3,1,0,0,3,0,6,7,7,7,7,7,7,7,7,7,1],
-  [1,0,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,1],
-  [1,0,0,0,3,0,0,0,0,0,3,0,0,3,0,0,0,0,0,0,1,7,7,7,4,7,7,7,7,7,1],
-  [1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,6,7,7,3,7,7,3,7,7,7,1],
-  [1,3,0,5,1,0,3,0,0,3,0,0,3,0,0,0,1,8,0,3,1,7,7,7,7,7,7,7,7,7,1],
-  [1,1,1,6,1,1,1,0,1,1,0,1,1,0,1,1,1,6,1,1,1,7,7,7,7,7,7,7,7,7,1],
-  [1,0,0,0,3,0,0,0,1,0,3,0,1,0,0,3,0,0,0,8,6,7,7,7,7,7,7,7,7,7,1],
-  [1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,1],
-  [1,0,0,3,0,0,1,0,3,0,1,0,0,0,1,0,0,3,0,0,1,7,7,7,5,7,7,7,7,7,1],
-  [1,1,1,1,1,6,1,1,1,0,1,1,1,0,1,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  [1,5,0,3,0,0,0,0,0,3,0,3,0,0,0,0,3,0,0,5,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,1,1,1,1,0,1,1,1,3,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1],
-  [1,4,0,0,3,0,3,0,0,0,0,0,0,3,3,0,0,0,0,8,1,1,1,1,1,1,1,1,1,1,1],
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,2,0,0,0,0,1,0,3,0,0,0,3,0,1,0,0,3,0,4,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,3,0,0,0,0,0,0,5,0,1,0,0,0,0,3,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,3,0,0,0,0,1,0,1,0,0,3,0,0,0,0,3,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,6,1,1,0,1,0,1,1,1,0,1,1,6,1,1,1,1,7,7,7,7,7,7,7,7,7,7,7,1],
+  [1,0,3,0,0,1,8,0,0,3,0,0,0,0,3,1,0,0,3,0,6,7,7,7,7,7,7,7,7,7,7,7,1],
+  [1,0,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,7,7,1],
+  [1,0,0,0,3,0,0,0,0,0,3,0,0,3,0,0,0,0,0,0,1,7,7,7,4,7,7,7,7,7,7,7,1],
+  [1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,6,7,7,3,7,7,3,7,7,7,7,7,1],
+  [1,3,0,5,1,0,3,0,0,3,0,0,3,0,0,0,1,8,0,3,1,7,7,7,7,7,7,7,7,7,7,7,1],
+  [1,1,1,6,1,1,1,0,1,1,0,1,1,0,1,1,1,6,1,1,1,7,7,7,7,7,7,7,7,7,7,7,1],
+  [1,0,0,0,3,0,0,0,1,0,3,0,1,0,0,3,0,0,0,8,6,7,7,7,7,7,7,7,7,7,7,7,1],
+  [1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,7,7,1],
+  [1,0,0,3,0,0,1,0,3,0,1,0,0,0,1,0,0,3,0,0,1,7,7,7,5,7,7,7,7,7,7,7,1],
+  [1,1,1,1,1,6,1,1,1,0,1,1,1,0,1,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,5,0,3,0,0,0,0,0,3,0,3,0,0,0,0,3,0,0,5,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,1,1,1,0,1,1,1,3,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,4,0,0,3,0,3,0,0,0,0,0,0,3,3,0,0,0,0,8,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
 function makeDoorTexture() {
@@ -68,6 +68,34 @@ function makeDoorTexture() {
   tex.magFilter = THREE.NearestFilter;
   tex.minFilter = THREE.NearestFilter;
   tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function makeBahceSignTexture() {
+  const c = document.createElement("canvas");
+  c.width = 256;
+  c.height = 64;
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "#5a3814";
+  ctx.fillRect(0, 0, 256, 64);
+  ctx.strokeStyle = "#c9a05a";
+  ctx.lineWidth = 5;
+  ctx.strokeRect(3, 3, 250, 58);
+  ctx.fillStyle = "#f2ddb0";
+  ctx.font = "bold 26px sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText("BAHÇE", 18, 34);
+  ctx.beginPath();
+  ctx.moveTo(168, 16);
+  ctx.lineTo(236, 32);
+  ctx.lineTo(168, 48);
+  ctx.closePath();
+  ctx.fillStyle = "#e8c43a";
+  ctx.fill();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
   return tex;
 }
 
@@ -117,7 +145,7 @@ export class Level {
     const doorTex = makeDoorTexture();
     floorTex.repeat.set(this.cols, this.rows);
     ceilTex.repeat.set(this.cols, this.rows);
-    grassTex.repeat.set(9, 10);
+    grassTex.repeat.set(11, 10);
     dirtTex.repeat.set(2, 2);
 
     const wallMatA = new THREE.MeshLambertMaterial({ map: stoneTex });
@@ -271,6 +299,7 @@ export class Level {
 
     if (gardenCells.length) {
       this._buildGarden(gardenCells, grassMat, dirtMat, barkMat, leafMat, leafDarkMat, flowerMats);
+      this._addGardenArrows(barkMat);
     }
 
     const amb = new THREE.AmbientLight(0xc0b098, 0.95);
@@ -375,6 +404,7 @@ export class Level {
     addTree(cx + CELL * 1.6, cz + CELL, 1.05);
     addTree(maxX - CELL * 0.7, cz, 1.22);
     addTree(cx + CELL * 2.1, maxZ - CELL * 0.55, 0.9);
+    addTree(maxX - CELL * 0.45, cz + CELL * 1.55, 1.08);
     addBush(minX + 1.1, minZ + 1.2, 1.1);
     addBush(maxX - 0.9, cz, 1.3);
     addBush(minX + 1.4, maxZ - 1.1, 0.95);
@@ -384,11 +414,45 @@ export class Level {
     addBush(maxX - 1.2, minZ + CELL, 0.9);
     addBush(maxX - 0.7, cz + CELL, 1.2);
     addBush(cx + CELL * 2.4, minZ + CELL * 0.8, 0.85);
+    addBush(maxX - CELL * 1.4, minZ + CELL * 1.8, 1.05);
+
+    const poolCx = cx + CELL * 2.15;
+    const poolCz = cz - CELL * 1.85;
+    const poolW = CELL * 1.55;
+    const poolD = CELL * 1.2;
+    const stone = new THREE.MeshLambertMaterial({ color: 0x8a8274 });
+    const bed = new THREE.Mesh(
+      new THREE.PlaneGeometry(poolW, poolD),
+      new THREE.MeshLambertMaterial({ color: 0x2a3a28 })
+    );
+    bed.rotation.x = -Math.PI / 2;
+    bed.position.set(poolCx, 0.045, poolCz);
+    const water = new THREE.Mesh(
+      new THREE.PlaneGeometry(poolW * 0.92, poolD * 0.88),
+      new THREE.MeshLambertMaterial({
+        color: 0x3a88aa,
+        transparent: true,
+        opacity: 0.78,
+        depthWrite: false,
+      })
+    );
+    water.rotation.x = -Math.PI / 2;
+    water.position.set(poolCx, 0.1, poolCz);
+    const rimN = new THREE.Mesh(new THREE.BoxGeometry(poolW + 0.32, 0.16, 0.22), stone);
+    const rimS = rimN.clone();
+    rimN.position.set(poolCx, 0.12, poolCz - poolD / 2);
+    rimS.position.set(poolCx, 0.12, poolCz + poolD / 2);
+    const rimW = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, poolD + 0.12), stone);
+    const rimE = rimW.clone();
+    rimW.position.set(poolCx - poolW / 2, 0.12, poolCz);
+    rimE.position.set(poolCx + poolW / 2, 0.12, poolCz);
+    this.group.add(bed, water, rimN, rimS, rimW, rimE);
 
     for (const cell of cells) {
       if (cell.x <= 22 && Math.abs(cell.z - 10) < 1) continue;
       if ((cell.x + cell.z) % 2 !== 0) continue;
       if (Math.abs(cell.wx - minX) < 0.8) continue;
+      if (Math.abs(cell.wx - poolCx) < poolW * 0.7 && Math.abs(cell.wz - poolCz) < poolD * 0.7) continue;
       const fm = flowerMats[(cell.x + cell.z) % flowerMats.length];
       const stem = new THREE.Mesh(
         new THREE.CylinderGeometry(0.02, 0.02, 0.22, 4),
@@ -407,6 +471,35 @@ export class Level {
     legL.position.set(cx - 0.2, 0.18, cz + 1.1);
     legR.position.set(cx + 0.9, 0.18, cz + 1.1);
     this.group.add(bench, legL, legR);
+  }
+
+  _addGardenArrows(barkMat) {
+    const tex = makeBahceSignTexture();
+    const boardMat = new THREE.MeshLambertMaterial({
+      map: tex,
+      side: THREE.DoubleSide,
+    });
+    const spots = [
+      { x: 19, z: 7 },
+      { x: 19, z: 10 },
+      { x: 18, z: 13 },
+    ];
+    for (const s of spots) {
+      if (this.grid[s.z]?.[s.x] === 1 || this.grid[s.z]?.[s.x] === 6) continue;
+      const wx = s.x * CELL + 1.05;
+      const wz = s.z * CELL;
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.48, 0.12), barkMat);
+      post.position.set(wx, 0.74, wz);
+      const shaft = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.16, 0.3), barkMat);
+      shaft.position.set(wx + 0.28, 1.38, wz);
+      const head = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.46, 4), barkMat);
+      head.rotation.z = -Math.PI / 2;
+      head.position.set(wx + 0.98, 1.38, wz);
+      const board = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.28), boardMat);
+      board.position.set(wx - 0.18, 1.4, wz);
+      board.rotation.y = -Math.PI / 2;
+      this.group.add(post, shaft, head, board);
+    }
   }
 
   /**

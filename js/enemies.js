@@ -758,17 +758,17 @@ class Enemy {
       this.patrolTimer -= dt;
       if (this.patrolTimer <= 0) {
         this.yaw = Math.random() * Math.PI * 2;
-        this.patrolDir.set(Math.cos(this.yaw), 0, Math.sin(this.yaw));
+        this.patrolDir.set(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
         this.patrolTimer = 1.5 + Math.random() * 2;
       }
       this._move(this.patrolDir, this.speed * 0.45, dt);
     } else if (this.state === STATE.CHASE) {
       toPlayer.normalize();
-      this.yaw = Math.atan2(toPlayer.x, toPlayer.z);
+      this.yaw = Math.atan2(-toPlayer.x, -toPlayer.z);
       this._move(toPlayer, this.speed, dt);
     } else if (this.state === STATE.ATTACK) {
       toPlayer.normalize();
-      this.yaw = Math.atan2(toPlayer.x, toPlayer.z);
+      this.yaw = Math.atan2(-toPlayer.x, -toPlayer.z);
 
       if (this.type === "sentry" || this.type === "flyer") {
         if (dist < 5) this._move(toPlayer.clone().negate(), this.speed * 0.6, dt);

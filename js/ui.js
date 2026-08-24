@@ -214,17 +214,24 @@ export class UI {
   }
 
   update(player, moving = false, dt = 0.016) {
-    this.hpEl.textContent = `${Math.ceil(player.hp)}%`;
+    this.hpEl.textContent = String(Math.max(0, Math.ceil(player.hp)));
     if (this.armorEl) this.armorEl.textContent = String(Math.max(0, Math.ceil(player.armor)));
     this.scoreEl.textContent = String(player.score);
 
-    this.face.classList.toggle("hurt", player.hp < 40);
+    let pain = 0;
+    if (player.hp < 20) pain = 4;
+    else if (player.hp < 40) pain = 3;
+    else if (player.hp < 60) pain = 2;
+    else if (player.hp < 80) pain = 1;
+    this.face.dataset.pain = String(pain);
 
     if (player.hp < this._lastHp || player.armor < this._lastArmor) {
       this.vignette.style.opacity = "1";
+      this.face.classList.add("ouch");
       clearTimeout(this._vigTimer);
       this._vigTimer = setTimeout(() => {
         this.vignette.style.opacity = "0";
+        this.face.classList.remove("ouch");
       }, 180);
     }
     this._lastHp = player.hp;
