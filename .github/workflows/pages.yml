@@ -25,7 +25,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html favicon.svg README.md _site/
-          cp -r css js _site/
+          cp -r css js img _site/
           touch _site/.nojekyll
 
       - name: Setup Pages

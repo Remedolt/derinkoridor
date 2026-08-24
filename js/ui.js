@@ -125,7 +125,7 @@ export class UI {
     this.hud.classList.add("hidden");
     this.overlay.classList.remove("hidden");
     this.overlay.classList.add("start-screen");
-    this.title.textContent = "DERİN KORİDORLAR";
+    this.title.textContent = "DERİN KORİDOR";
     if (this.sub) {
       this.sub.textContent = "";
       this.sub.classList.add("hidden");
