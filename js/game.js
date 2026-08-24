@@ -84,6 +84,11 @@ export class Game {
     });
 
     this.ui.showStart(() => this.start());
+    document.getElementById("btn-start")?.addEventListener(
+      "click",
+      () => this._enterFullscreen(),
+      true
+    );
     document.getElementById("btn-menu-fullscreen")?.addEventListener("click", () => {
       this._enterFullscreen();
     });
@@ -102,7 +107,7 @@ export class Game {
   }
 
   start() {
-    this._enterFullscreen();
+    const fs = this._enterFullscreen();
     this.audio.unlock();
     this.level.setAudio(this.audio);
     this._resetLevel();
@@ -112,7 +117,11 @@ export class Game {
     if (this.input.isTouch) this.mobile.enable();
     else {
       this.mobile.disable();
-      this.input.requestPointerLock();
+      const lock = () => {
+        if (this.state === "playing") this.input.requestPointerLock();
+      };
+      if (fs && typeof fs.then === "function") fs.then(lock).catch(lock);
+      else lock();
     }
   }
 
@@ -209,15 +218,21 @@ export class Game {
   }
 
   _enterFullscreen() {
-    const root = document.documentElement;
-    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    const root = document.getElementById("game-root") || document.documentElement;
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      return Promise.resolve();
+    }
     const req = root.requestFullscreen || root.webkitRequestFullscreen;
+    if (!req) return Promise.resolve();
     try {
-      const result = req?.call(root);
-      if (result && typeof result.catch === "function") result.catch(() => {});
+      const result = req.call(root, { navigationUI: "hide" });
+      if (result && typeof result.catch === "function") {
+        return result.catch(() => {});
+      }
     } catch {
       /* tarayıcı reddettiyse oyunu yine de başlat */
     }
+    return Promise.resolve();
   }
 
   _toggleFullscreen() {

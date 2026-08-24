@@ -86,11 +86,6 @@ function makeBahceWallTexture(arrowLeft = false) {
   ctx.lineWidth = 8;
   ctx.strokeRect(16, 16, 480, 128);
 
-  ctx.fillStyle = "#f4e2b0";
-  ctx.font = "bold 72px monospace";
-  ctx.textBaseline = "middle";
-  ctx.textAlign = "left";
-
   const drawArrow = (tipX, dir) => {
     const baseX = tipX - dir * 118;
     ctx.beginPath();
@@ -104,12 +99,15 @@ function makeBahceWallTexture(arrowLeft = false) {
     ctx.fillRect(Math.min(tipX, baseX) + 24, 68, 70, 24);
   };
 
+  ctx.fillStyle = "#f4e2b0";
+  ctx.font = "bold 72px monospace";
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "left";
   if (arrowLeft) {
     drawArrow(48, -1);
     ctx.fillStyle = "#f4e2b0";
     ctx.fillText("BAHÇE", 168, 84);
   } else {
-    ctx.fillStyle = "#f4e2b0";
     ctx.fillText("BAHÇE", 36, 84);
     drawArrow(478, 1);
   }
@@ -117,17 +115,8 @@ function makeBahceWallTexture(arrowLeft = false) {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
-  tex.flipY = true;
   tex.needsUpdate = true;
   return tex;
-}
-
-function plaqueBoardGeometry() {
-  const geo = new THREE.PlaneGeometry(2.15, 0.68);
-  const uv = geo.attributes.uv;
-  for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));
-  uv.needsUpdate = true;
-  return geo;
 }
 
 export class Level {
@@ -194,7 +183,6 @@ export class Level {
       signMatR: new THREE.MeshLambertMaterial({ map: makeBahceWallTexture(false) }),
       signMatL: new THREE.MeshLambertMaterial({ map: makeBahceWallTexture(true) }),
       signWood: new THREE.MeshLambertMaterial({ color: 0x4a3018 }),
-      plaqueGeo: plaqueBoardGeometry(),
       waterMat: new THREE.MeshPhongMaterial({
         color: 0x3a88aa,
         transparent: true,
@@ -511,7 +499,7 @@ export class Level {
   }
 
   _addGardenWallSigns() {
-    const { signMatR, signMatL, signWood, plaqueGeo } = this._ensureAssets();
+    const { signMatR, signMatL, signWood } = this._ensureAssets();
     const mounts = [
       { gx: 8, gz: 8, face: "s" },
       { gx: 15, gz: 8, face: "s" },
@@ -521,32 +509,33 @@ export class Level {
     for (const m of mounts) {
       if (this.grid[m.gz]?.[m.gx] !== 1) continue;
       const mat = m.face === "n" || m.face === "e" ? signMatL : signMatR;
-      this._mountWallPlaque(m.gx, m.gz, m.face, mat, signWood, plaqueGeo);
+      this._mountWallPlaque(m.gx, m.gz, m.face, mat, signWood);
     }
   }
 
-  _mountWallPlaque(gx, gz, face, boardMat, woodMat, plaqueGeo) {
+  _mountWallPlaque(gx, gz, face, boardMat, woodMat) {
     const wx = gx * CELL;
     const wz = gz * CELL;
-    const inset = CELL / 2 + 0.05;
-    const back = new THREE.Mesh(new THREE.BoxGeometry(2.28, 0.78, 0.08), woodMat);
-    const board = new THREE.Mesh(plaqueGeo, boardMat);
-    board.position.z = 0.05;
-    const g = new THREE.Group();
-    g.add(back, board);
-    g.position.set(wx, 1.68, wz);
-    if (face === "s") g.position.z = wz + inset;
-    else if (face === "n") {
-      g.position.z = wz - inset;
-      g.rotation.y = Math.PI;
-    } else if (face === "e") {
-      g.position.x = wx + inset;
-      g.rotation.y = Math.PI / 2;
-    } else {
-      g.position.x = wx - inset;
-      g.rotation.y = -Math.PI / 2;
-    }
-    this.group.add(g);
+    const y = 1.68;
+    const inset = CELL / 2 + 0.06;
+    let px = wx;
+    let pz = wz;
+    if (face === "s") pz = wz + inset;
+    else if (face === "n") pz = wz - inset;
+    else if (face === "e") px = wx + inset;
+    else px = wx - inset;
+
+    const plaque = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.7, 0.08), [
+      woodMat,
+      woodMat,
+      woodMat,
+      woodMat,
+      boardMat,
+      woodMat,
+    ]);
+    plaque.position.set(px, y, pz);
+    plaque.lookAt(wx, y, wz);
+    this.group.add(plaque);
   }
 
   /**
