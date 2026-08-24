@@ -178,16 +178,16 @@ body {
 .hud-stat .label {
   display: block;
   font-family: "Press Start 2P", monospace;
-  font-size: 0.4rem;
-  letter-spacing: 0.06em;
-  color: #c8c8d0;
-  margin-bottom: 0.3rem;
-  text-shadow: 1px 1px 0 #000;
+  font-size: clamp(0.62rem, 1.8vw, 0.82rem);
+  letter-spacing: 0.08em;
+  color: #e8e8ee;
+  margin-bottom: 0.32rem;
+  text-shadow: 2px 2px 0 #000;
 }
 
 .hud-stat .value {
   font-family: "Press Start 2P", monospace;
-  font-size: clamp(0.85rem, 3.2vw, 1.35rem);
+  font-size: clamp(1.05rem, 3.6vw, 1.55rem);
   color: #e8e8f0;
   text-shadow: 2px 2px 0 #000;
 }
@@ -347,7 +347,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   font-family: "Press Start 2P", monospace;
-  font-size: 0.4rem;
+  font-size: 0.55rem;
   color: #c8b898;
   text-shadow: 1px 1px 0 #000;
   opacity: 0.85;
@@ -833,11 +833,11 @@ body:not(.is-touch) .mobile-hint {
 
 @media (max-width: 600px) {
   .hud-stat .label {
-    font-size: 0.32rem;
+    font-size: 0.52rem;
   }
 
   .hud-stat .value {
-    font-size: 0.65rem;
+    font-size: 0.85rem;
   }
 
   #weapon-view {

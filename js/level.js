@@ -73,15 +73,11 @@ function makeDoorTexture() {
   return tex;
 }
 
-function makeBahceWallTexture(flipArrow = false) {
+function makeBahceWallTexture(arrowLeft = false) {
   const c = document.createElement("canvas");
   c.width = 512;
   c.height = 160;
   const ctx = c.getContext("2d");
-  if (flipArrow) {
-    ctx.translate(512, 0);
-    ctx.scale(-1, 1);
-  }
   ctx.fillStyle = "#3a2410";
   ctx.fillRect(0, 0, 512, 160);
   ctx.fillStyle = "#6a4420";
@@ -89,25 +85,49 @@ function makeBahceWallTexture(flipArrow = false) {
   ctx.strokeStyle = "#e0c070";
   ctx.lineWidth = 8;
   ctx.strokeRect(16, 16, 480, 128);
+
   ctx.fillStyle = "#f4e2b0";
-  ctx.font = "bold 64px monospace";
-  ctx.textAlign = "left";
+  ctx.font = "bold 72px monospace";
   ctx.textBaseline = "middle";
-  ctx.fillText("BAHÇE", 36, 84);
-  ctx.beginPath();
-  ctx.moveTo(340, 36);
-  ctx.lineTo(478, 80);
-  ctx.lineTo(340, 124);
-  ctx.closePath();
-  ctx.fillStyle = "#f0d040";
-  ctx.fill();
-  ctx.fillStyle = "#3a2410";
-  ctx.fillRect(340, 68, 72, 24);
+  ctx.textAlign = "left";
+
+  const drawArrow = (tipX, dir) => {
+    const baseX = tipX - dir * 118;
+    ctx.beginPath();
+    ctx.moveTo(tipX, 80);
+    ctx.lineTo(baseX, 32);
+    ctx.lineTo(baseX, 128);
+    ctx.closePath();
+    ctx.fillStyle = "#f0d040";
+    ctx.fill();
+    ctx.fillStyle = "#3a2410";
+    ctx.fillRect(Math.min(tipX, baseX) + 24, 68, 70, 24);
+  };
+
+  if (arrowLeft) {
+    drawArrow(48, -1);
+    ctx.fillStyle = "#f4e2b0";
+    ctx.fillText("BAHÇE", 168, 84);
+  } else {
+    ctx.fillStyle = "#f4e2b0";
+    ctx.fillText("BAHÇE", 36, 84);
+    drawArrow(478, 1);
+  }
+
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
+  tex.flipY = true;
   tex.needsUpdate = true;
   return tex;
+}
+
+function plaqueBoardGeometry() {
+  const geo = new THREE.PlaneGeometry(2.15, 0.68);
+  const uv = geo.attributes.uv;
+  for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));
+  uv.needsUpdate = true;
+  return geo;
 }
 
 export class Level {
@@ -174,6 +194,7 @@ export class Level {
       signMatR: new THREE.MeshLambertMaterial({ map: makeBahceWallTexture(false) }),
       signMatL: new THREE.MeshLambertMaterial({ map: makeBahceWallTexture(true) }),
       signWood: new THREE.MeshLambertMaterial({ color: 0x4a3018 }),
+      plaqueGeo: plaqueBoardGeometry(),
       waterMat: new THREE.MeshPhongMaterial({
         color: 0x3a88aa,
         transparent: true,
@@ -490,7 +511,7 @@ export class Level {
   }
 
   _addGardenWallSigns() {
-    const { signMatR, signMatL, signWood } = this._ensureAssets();
+    const { signMatR, signMatL, signWood, plaqueGeo } = this._ensureAssets();
     const mounts = [
       { gx: 8, gz: 8, face: "s" },
       { gx: 15, gz: 8, face: "s" },
@@ -500,20 +521,20 @@ export class Level {
     for (const m of mounts) {
       if (this.grid[m.gz]?.[m.gx] !== 1) continue;
       const mat = m.face === "n" || m.face === "e" ? signMatL : signMatR;
-      this._mountWallPlaque(m.gx, m.gz, m.face, mat, signWood);
+      this._mountWallPlaque(m.gx, m.gz, m.face, mat, signWood, plaqueGeo);
     }
   }
 
-  _mountWallPlaque(gx, gz, face, boardMat, woodMat) {
+  _mountWallPlaque(gx, gz, face, boardMat, woodMat, plaqueGeo) {
     const wx = gx * CELL;
     const wz = gz * CELL;
-    const inset = CELL / 2 + 0.04;
-    const back = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.56, 0.07), woodMat);
-    const board = new THREE.Mesh(new THREE.PlaneGeometry(1.58, 0.46), boardMat);
-    board.position.z = 0.04;
+    const inset = CELL / 2 + 0.05;
+    const back = new THREE.Mesh(new THREE.BoxGeometry(2.28, 0.78, 0.08), woodMat);
+    const board = new THREE.Mesh(plaqueGeo, boardMat);
+    board.position.z = 0.05;
     const g = new THREE.Group();
     g.add(back, board);
-    g.position.set(wx, 1.62, wz);
+    g.position.set(wx, 1.68, wz);
     if (face === "s") g.position.z = wz + inset;
     else if (face === "n") {
       g.position.z = wz - inset;
