@@ -1,0 +1,29 @@
+# Derin Koridorlar
+
+Tarayıcıda çalışan statik bir retro FPS oyunu (HTML / CSS / JS + Three.js).
+
+**Oyna:** [https://remedolt.github.io/derinkoridor/](https://remedolt.github.io/derinkoridor/)
+
+## Oynanış
+
+- **3 dalga:** her dalga temizlenince kısa bir ara, ardından daha zor spawn; 3. dalga sonrası zafer
+- **6 silah:** `1` pompalı, `2` tabanca, `3` makineli, `4` plazma, `5` roket, `6` alev (mobilde SİLAH döngüsü)
+- **Kapılar:** yaklaşınca `E` (mobilde KAPI) ile aç / kapat
+- **Bahçe:** doğu kanadında açık tavanlı küçük bir avlu
+- **Skor tablosu:** başlangıçta isim gir; bitişte `localStorage` ile en iyi 10
+
+## Yerelde çalıştırma
+
+```bash
+npx serve . -l 5173
+```
+
+Ardından tarayıcıda [http://localhost:5173](http://localhost:5173) adresini aç.
+
+`index.html` dosyasını doğrudan açmak (file://) modül script’leri yüzünden çalışmayabilir; yerel bir sunucu kullan.
+
+## GitHub Pages
+
+1. GitHub’da **Settings → Pages**
+2. **Source** olarak **GitHub Actions** seç
+3. `main` dalına push edilince site otomatik yayınlanır

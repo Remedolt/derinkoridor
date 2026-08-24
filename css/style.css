@@ -1,0 +1,704 @@
+/* Derin Koridorlar — retro FPS chrome (classic status-bar vibe) */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #050508;
+  font-family: "Share Tech Mono", monospace;
+  color: #e8dcc8;
+  touch-action: none;
+}
+
+#game-root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #1a1410;
+  image-rendering: pixelated;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+#pickup-msg {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.55rem, 2vw, 0.75rem);
+  color: #ff3344;
+  text-shadow: 2px 2px 0 #200000;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+#pickup-msg.show {
+  opacity: 1;
+}
+
+#crosshair {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgba(255, 220, 180, 0.75);
+  text-shadow: 0 0 3px #000;
+  line-height: 1;
+}
+
+#damage-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(160, 0, 0, 0.7) 100%);
+  transition: opacity 0.08s linear;
+}
+
+/* —— First-person weapon —— */
+#weapon-view {
+  position: absolute;
+  left: 50%;
+  bottom: 4.2rem;
+  width: min(96vw, 640px);
+  height: min(62vw, 390px);
+  transform: translateX(-42%);
+  transform-origin: 70% 100%;
+  transition: transform 0.05s linear;
+  z-index: 12;
+}
+
+#weapon-sprite {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 68% 100%;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.7));
+}
+
+#weapon-sprite.weapon-pistol {
+  object-position: 78% 108%;
+  transform: scale(0.82);
+  transform-origin: 80% 100%;
+}
+
+#weapon-sprite.weapon-shotgun {
+  object-position: 62% 102%;
+}
+
+#weapon-sprite.weapon-machinegun,
+#weapon-sprite.weapon-plasma,
+#weapon-sprite.weapon-rocket,
+#weapon-sprite.weapon-flamethrower {
+  object-position: 58% 100%;
+}
+
+#muzzle-flash {
+  position: absolute;
+  top: -16%;
+  left: 28%;
+  width: 44%;
+  height: 38%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+#weapon-view.recoil {
+  transform: translateX(-42%) translateY(18px) scale(0.97);
+}
+
+#weapon-view.muzzle #muzzle-flash {
+  opacity: 1;
+}
+
+#weapon-view.bob {
+  transform: translateX(calc(-42% + var(--bob-x, 0px))) translateY(var(--bob-y, 0px));
+}
+
+/* —— Classic metal status bar —— */
+.hud-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto 1fr;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.75rem calc(0.45rem + env(safe-area-inset-bottom));
+  background:
+    linear-gradient(180deg, #6a6a70 0%, #3a3a40 18%, #2a2a30 100%);
+  border-top: 3px solid #8a8a92;
+  box-shadow: inset 0 3px 0 #9a9aa2, 0 -2px 12px rgba(0, 0, 0, 0.5);
+  z-index: 15;
+}
+
+.hud-stat {
+  text-align: center;
+  min-width: 0;
+}
+
+.hud-stat .label {
+  display: block;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.4rem;
+  letter-spacing: 0.06em;
+  color: #c8c8d0;
+  margin-bottom: 0.3rem;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.hud-stat .value {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.85rem, 3.2vw, 1.35rem);
+  color: #e8e8f0;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.hud-stat .value.red {
+  color: #ff2a2a;
+  text-shadow: 2px 2px 0 #400000, 0 0 8px rgba(255, 40, 40, 0.35);
+}
+
+.hud-face {
+  width: clamp(48px, 12vw, 72px);
+  height: clamp(48px, 12vw, 72px);
+  margin: 0 auto;
+  background: #1a1a22;
+  border: 3px solid #555560;
+  box-shadow: inset 0 0 0 2px #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face-pixel {
+  width: 70%;
+  height: 70%;
+  background:
+    linear-gradient(#6a4a35 0 35%, #8a6a50 35% 55%, #6a4a35 55% 100%);
+  position: relative;
+  image-rendering: pixelated;
+}
+
+.face-pixel::before,
+.face-pixel::after {
+  content: "";
+  position: absolute;
+  top: 28%;
+  width: 18%;
+  height: 18%;
+  background: #ffe566;
+  box-shadow: 0 0 4px #ffaa00;
+}
+
+.face-pixel::before {
+  left: 18%;
+}
+
+.face-pixel::after {
+  right: 18%;
+}
+
+.hud-face.hurt .face-pixel {
+  background: linear-gradient(#5a3028 0 40%, #7a4840 40% 100%);
+}
+
+.hud-face.hurt .face-pixel::before,
+.hud-face.hurt .face-pixel::after {
+  background: #ff8866;
+}
+
+.hud-weapon-name {
+  position: absolute;
+  bottom: calc(4.6rem + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.4rem;
+  color: #c8b898;
+  text-shadow: 1px 1px 0 #000;
+  opacity: 0.85;
+  z-index: 14;
+}
+
+.hud-hint {
+  position: absolute;
+  bottom: calc(3.15rem + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  color: rgba(200, 180, 140, 0.7);
+  text-shadow: 1px 1px 0 #000;
+  z-index: 14;
+  pointer-events: none;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* —— Overlays —— */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 1rem;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(80, 40, 20, 0.35), transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(40, 20, 10, 0.4), transparent 45%),
+    linear-gradient(180deg, #120e0a 0%, #1a1410 100%);
+}
+
+.overlay.start-screen {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 120, 40, 0.12), transparent 55%),
+    radial-gradient(ellipse at 20% 80%, rgba(60, 90, 70, 0.12), transparent 40%),
+    radial-gradient(ellipse at 80% 60%, rgba(120, 50, 20, 0.18), transparent 45%),
+    linear-gradient(165deg, #0e0a08 0%, #1c1410 45%, #161210 100%);
+  animation: bg-shift 14s ease-in-out infinite alternate;
+}
+
+@keyframes bg-shift {
+  0% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  100% {
+    filter: hue-rotate(-8deg) brightness(1.06);
+  }
+}
+
+.overlay-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fx-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+  opacity: 0.45;
+  animation: scan-drift 8s linear infinite;
+}
+
+@keyframes scan-drift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(4px);
+  }
+}
+
+.fx-particles {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 20%, rgba(255, 180, 100, 0.55), transparent),
+    radial-gradient(1px 1px at 40% 70%, rgba(255, 140, 60, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 70% 30%, rgba(200, 220, 180, 0.35), transparent),
+    radial-gradient(1px 1px at 85% 55%, rgba(255, 160, 80, 0.5), transparent),
+    radial-gradient(1px 1px at 25% 85%, rgba(255, 200, 140, 0.3), transparent),
+    radial-gradient(2px 2px at 55% 15%, rgba(255, 100, 40, 0.35), transparent);
+  animation: particle-float 18s ease-in-out infinite alternate;
+  opacity: 0.7;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-2%, 3%);
+  }
+}
+
+.overlay-panel {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem 1.5rem 1.75rem;
+  max-width: 38rem;
+  width: min(100%, 38rem);
+  border: 3px solid #8a6a40;
+  background:
+    linear-gradient(180deg, rgba(28, 22, 16, 0.96) 0%, rgba(12, 10, 8, 0.94) 100%);
+  box-shadow:
+    0 0 40px rgba(255, 100, 40, 0.18),
+    inset 0 0 60px rgba(40, 20, 10, 0.5),
+    0 0 0 1px rgba(255, 180, 100, 0.15);
+  animation: border-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes border-pulse {
+  0%,
+  100% {
+    border-color: #8a6a40;
+    box-shadow:
+      0 0 32px rgba(255, 100, 40, 0.14),
+      inset 0 0 60px rgba(40, 20, 10, 0.5),
+      0 0 0 1px rgba(255, 180, 100, 0.1);
+  }
+  50% {
+    border-color: #c88848;
+    box-shadow:
+      0 0 52px rgba(255, 120, 40, 0.28),
+      inset 0 0 60px rgba(40, 20, 10, 0.5),
+      0 0 0 1px rgba(255, 200, 120, 0.25);
+  }
+}
+
+.overlay-panel h1 {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.85rem, 3.5vw, 1.35rem);
+  color: #ff8844;
+  text-shadow: 0 0 16px #ff4422, 3px 3px 0 #200800;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  animation: title-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes title-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 12px #ff4422, 3px 3px 0 #200800;
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow: 0 0 28px #ff6633, 0 0 48px rgba(255, 80, 20, 0.45), 3px 3px 0 #200800;
+    filter: brightness(1.08);
+  }
+}
+
+#overlay-sub {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.5rem;
+  color: #c8a878;
+  letter-spacing: 0.15em;
+  margin-bottom: 1.25rem;
+}
+
+.overlay-msg {
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  line-height: 1.55;
+  color: #c8b8a0;
+  margin-bottom: 1.25rem;
+}
+
+.overlay-msg strong {
+  color: #ff8844;
+  font-weight: 700;
+}
+
+.desktop-hint,
+.mobile-hint {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #887868;
+}
+
+body.is-touch .desktop-hint {
+  display: none;
+}
+
+body:not(.is-touch) .mobile-hint {
+  display: none;
+}
+
+/* Name + scoreboard */
+.name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.name-row label {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.45rem;
+  color: #c8a878;
+  letter-spacing: 0.1em;
+}
+
+#player-name {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 1rem;
+  width: min(14rem, 70vw);
+  padding: 0.55rem 0.75rem;
+  color: #ffe8d0;
+  background: rgba(8, 6, 4, 0.85);
+  border: 2px solid #8a6a40;
+  outline: none;
+  text-align: center;
+  user-select: text;
+  -webkit-user-select: text;
+  pointer-events: auto;
+  caret-color: #ff8844;
+}
+
+#player-name:focus {
+  border-color: #ff8844;
+  box-shadow: 0 0 12px rgba(255, 120, 40, 0.35);
+}
+
+.scoreboard {
+  margin: 0 auto 1.35rem;
+  max-width: 22rem;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #b8a890;
+  pointer-events: none;
+}
+
+.scoreboard-title {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.45rem;
+  color: #ff8844;
+  text-align: center;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.65rem;
+}
+
+.scoreboard-empty {
+  text-align: center;
+  color: #776858;
+  font-size: 0.85rem;
+}
+
+.score-head,
+.score-row {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr 3.5rem 2.4rem;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.28rem 0.2rem;
+}
+
+.score-head {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.32rem;
+  color: #887868;
+  border-bottom: 1px solid rgba(138, 106, 64, 0.45);
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.35rem;
+}
+
+.score-row {
+  border-bottom: 1px solid rgba(60, 48, 36, 0.5);
+}
+
+.score-row.highlight {
+  background: rgba(255, 100, 40, 0.12);
+  color: #ffe0c0;
+}
+
+.score-row .rank {
+  color: #887868;
+}
+
+.score-row .sname {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-row .sscore {
+  text-align: right;
+  color: #ff6644;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-row .sdate {
+  text-align: right;
+  font-size: 0.7rem;
+  color: #665848;
+}
+
+#btn-start {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.65rem;
+  padding: 1rem 1.5rem;
+  color: #1a1008;
+  background: #ff8844;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 100, 40, 0.45);
+  transition: transform 0.1s, box-shadow 0.1s;
+  pointer-events: auto;
+}
+
+#btn-start:hover,
+#btn-start:active {
+  transform: scale(1.04);
+  box-shadow: 0 0 32px rgba(255, 120, 40, 0.7);
+}
+
+/* —— Mobile —— */
+#mobile-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.stick-zone {
+  position: absolute;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  width: 42vw;
+  max-width: 180px;
+  height: 42vw;
+  max-height: 180px;
+  pointer-events: auto;
+}
+
+#stick-move {
+  left: 4vw;
+}
+
+#stick-look {
+  right: 4vw;
+}
+
+.stick-base {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(200, 160, 100, 0.45);
+  background: rgba(20, 12, 8, 0.4);
+}
+
+.stick-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 42%;
+  height: 42%;
+  margin: -21% 0 0 -21%;
+  border-radius: 50%;
+  background: rgba(255, 140, 60, 0.55);
+  border: 2px solid rgba(255, 220, 180, 0.7);
+  will-change: transform;
+}
+
+#mobile-buttons {
+  position: absolute;
+  right: 4vw;
+  bottom: calc(48vw + env(safe-area-inset-bottom));
+  max-width: 180px;
+  width: 42vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.mob-btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.45rem;
+  padding: 0.85rem 0.4rem;
+  color: #e8dcc8;
+  background: rgba(24, 16, 12, 0.75);
+  border: 2px solid rgba(200, 140, 80, 0.55);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mob-btn.fire {
+  grid-column: 1 / -1;
+  background: rgba(80, 16, 12, 0.8);
+  border-color: #ff4455;
+  color: #ffccd0;
+  padding: 1.1rem 0.4rem;
+}
+
+.mob-btn:active,
+.mob-btn.active {
+  background: rgba(255, 140, 60, 0.35);
+}
+
+.mob-btn.fire:active,
+.mob-btn.fire.active {
+  background: rgba(255, 60, 70, 0.55);
+}
+
+@media (min-width: 900px) and (pointer: fine) {
+  #mobile-ui {
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .hud-stat .label {
+    font-size: 0.32rem;
+  }
+
+  .hud-stat .value {
+    font-size: 0.65rem;
+  }
+
+  #weapon-view {
+    bottom: 4.0rem;
+    width: 90vw;
+    height: 52vw;
+  }
+
+  .hud-weapon-name {
+    bottom: calc(3.8rem + env(safe-area-inset-bottom));
+  }
+
+  .hud-hint {
+    bottom: calc(2.55rem + env(safe-area-inset-bottom));
+    font-size: 0.6rem;
+  }
+}
