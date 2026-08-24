@@ -18,63 +18,122 @@ function stripe(ctx, x, y, w, h, gap, color) {
   for (let i = 0; i < h; i += gap) px(ctx, x, y + i, w, 2, color);
 }
 
-/** Dual-barrel pump shotgun — FP 3/4 view, barrels up toward the sight. */
+/** Scanline trapezoid — integer rows so the sprite stays pixel-crisp. */
+function trap(ctx, y0, y1, l0, r0, l1, r1, color) {
+  const n = Math.max(1, Math.round(y1 - y0));
+  for (let i = 0; i < n; i++) {
+    const t = i / n;
+    const l = l0 + (l1 - l0) * t;
+    const r = r0 + (r1 - r0) * t;
+    px(ctx, l, y0 + i, Math.max(1, r - l), 1, color);
+  }
+}
+
+/** Sawed-off side-by-side — FP view down the barrels toward the sight. */
 export function drawShotgunSprite() {
   const c = document.createElement("canvas");
-  c.width = 560;
-  c.height = 400;
+  c.width = 540;
+  c.height = 420;
   const ctx = c.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
-  // Wooden stock (lower right)
-  blk(ctx, 292, 268, 150, 92, "#2a1c12");
-  px(ctx, 304, 280, 126, 70, "#5a3a22");
-  px(ctx, 316, 292, 102, 46, "#7a5230");
-  px(ctx, 328, 308, 78, 10, "#c8a070");
-  px(ctx, 320, 336, 88, 12, "#1a1008");
+  const ring = (y, thick, grow = 3) => {
+    const t = (y - 22) / 148;
+    const ll0 = 236, lr0 = 258, ll1 = 188, lr1 = 248;
+    const rl0 = 262, rr0 = 284, rl1 = 272, rr1 = 332;
+    const lL = ll0 + (ll1 - ll0) * t;
+    const lR = lr0 + (lr1 - lr0) * t;
+    const rL = rl0 + (rl1 - rl0) * t;
+    const rR = rr0 + (rr1 - rr0) * t;
+    trap(ctx, y, y + thick, lL - grow, lR + 1, lL - grow, lR + 1, "#3a3a42");
+    trap(ctx, y, y + thick, rL - 1, rR + grow, rL - 1, rR + grow, "#3a3a42");
+    trap(ctx, y + 1, y + thick - 1, lL - grow + 2, lR, lL - grow + 2, lR, "#6a6a74");
+    trap(ctx, y + 1, y + thick - 1, rL, rR + grow - 2, rL, rR + grow - 2, "#6a6a74");
+    trap(ctx, y + 2, y + 3, lL - 1, lR - 4, lL - 1, lR - 4, "#c0c0c8");
+    trap(ctx, y + 2, y + 3, rL + 4, rR + 1, rL + 4, rR + 1, "#c0c0c8");
+  };
 
-  // Receiver
-  blk(ctx, 176, 188, 230, 92, "#141418");
-  px(ctx, 188, 196, 206, 28, "#6a6a78");
-  px(ctx, 192, 194, 198, 8, "#d0d0dc");
-  px(ctx, 196, 232, 190, 36, "#0c0c10");
-  px(ctx, 250, 204, 44, 18, "#050508");
-  px(ctx, 190, 202, 12, 22, "#ececf4");
-  px(ctx, 360, 210, 26, 16, "#cc2233");
-  px(ctx, 364, 214, 16, 8, "#ff8899");
+  // —— Barrels (far → near) ——
+  trap(ctx, 20, 172, 234, 260, 184, 252, "#07070a");
+  trap(ctx, 20, 172, 260, 286, 268, 336, "#07070a");
+  trap(ctx, 22, 170, 236, 258, 188, 248, "#5c5c66");
+  trap(ctx, 22, 170, 262, 284, 272, 332, "#5c5c66");
+  trap(ctx, 24, 168, 238, 250, 196, 226, "#9a9aa4");
+  trap(ctx, 24, 168, 264, 276, 280, 310, "#9a9aa4");
+  trap(ctx, 28, 166, 240, 248, 204, 218, "#d0d0d8");
+  trap(ctx, 28, 166, 266, 274, 288, 302, "#d0d0d8");
+  trap(ctx, 30, 164, 250, 257, 228, 246, "#3a3a44");
+  trap(ctx, 30, 164, 263, 270, 274, 292, "#3a3a44");
 
-  // Dual barrels pointing up
-  blk(ctx, 198, 18, 46, 178, "#2a2a34");
-  blk(ctx, 292, 18, 46, 178, "#2a2a34");
-  px(ctx, 206, 4, 30, 28, "#121218");
-  px(ctx, 300, 4, 30, 28, "#121218");
-  px(ctx, 210, 0, 22, 10, "#050508");
-  px(ctx, 304, 0, 22, 10, "#050508");
-  px(ctx, 214, 2, 14, 6, "#000");
-  px(ctx, 308, 2, 14, 6, "#000");
-  px(ctx, 200, 28, 8, 150, "#9a9aac");
-  px(ctx, 294, 28, 8, 150, "#9a9aac");
-  px(ctx, 236, 28, 6, 150, "#08080c");
-  px(ctx, 330, 28, 6, 150, "#08080c");
-  stripe(ctx, 198, 36, 46, 150, 18, "#101014");
-  stripe(ctx, 292, 36, 46, 150, 18, "#101014");
-  // Rib + beads
-  px(ctx, 248, 22, 38, 12, "#3a3a46");
-  px(ctx, 256, 16, 22, 10, "#b0b0c0");
-  px(ctx, 214, 0, 12, 6, "#f0f0f8");
-  px(ctx, 308, 0, 12, 6, "#f0f0f8");
-  px(ctx, 218, 1, 6, 4, "#ff2200");
-  px(ctx, 312, 1, 6, 4, "#ff2200");
+  ring(48, 10, 4);
+  ring(82, 10, 4);
+  ring(118, 11, 5);
+  ring(152, 12, 5);
 
-  // Pump forend
-  blk(ctx, 168, 248, 220, 42, "#24180e");
-  px(ctx, 180, 256, 196, 26, "#5a4028");
-  px(ctx, 168, 248, 220, 6, "#c4a060");
-  for (let i = 0; i < 10; i++) px(ctx, 188 + i * 18, 260, 12, 18, "#1a1008");
+  // Center rib
+  trap(ctx, 22, 168, 256, 264, 246, 274, "#07070a");
+  trap(ctx, 24, 166, 258, 262, 250, 270, "#8a8a94");
+  trap(ctx, 26, 70, 259, 261, 254, 264, "#d8d8e0");
 
-  // Trigger guard
-  blk(ctx, 248, 268, 58, 28, "#18181e");
-  px(ctx, 264, 276, 24, 14, "#050508");
+  // Muzzle holes
+  px(ctx, 240, 8, 18, 16, "#07070a");
+  px(ctx, 266, 8, 18, 16, "#07070a");
+  px(ctx, 243, 10, 12, 12, "#1a1a20");
+  px(ctx, 269, 10, 12, 12, "#1a1a20");
+  px(ctx, 246, 12, 6, 8, "#000");
+  px(ctx, 272, 12, 6, 8, "#000");
+  px(ctx, 244, 11, 4, 3, "#888890");
+  px(ctx, 270, 11, 4, 3, "#888890");
+
+  // —— Receiver / breech (tapers toward the player) ——
+  trap(ctx, 164, 214, 176, 344, 198, 322, "#07070a");
+  trap(ctx, 166, 212, 180, 340, 202, 318, "#6e6e78");
+  trap(ctx, 170, 188, 188, 332, 200, 320, "#c4c4cc");
+  trap(ctx, 188, 210, 196, 324, 208, 312, "#4e4e58");
+  px(ctx, 236, 176, 48, 8, "#ececf2");
+  px(ctx, 248, 192, 24, 8, "#1a1a20");
+
+  // Gold / brass break lever on the left — latch + handle, not a square
+  blk(ctx, 118, 170, 68, 18, "#5a4010");
+  px(ctx, 122, 174, 62, 10, "#e0b430");
+  px(ctx, 126, 176, 40, 6, "#f8d868");
+  blk(ctx, 112, 178, 28, 52, "#5a4010");
+  px(ctx, 116, 182, 20, 44, "#c89820");
+  px(ctx, 120, 186, 12, 14, "#f0d060");
+  px(ctx, 118, 208, 16, 18, "#a87818");
+  px(ctx, 122, 214, 10, 6, "#e8c048");
+  px(ctx, 114, 224, 24, 6, "#8a6810");
+  px(ctx, 148, 176, 10, 22, "#6a4a08");
+
+  // —— Wooden grip ——
+  trap(ctx, 214, 262, 196, 324, 208, 318, "#07070a");
+  trap(ctx, 216, 260, 200, 320, 212, 314, "#5a2810");
+  trap(ctx, 220, 256, 214, 300, 222, 298, "#8a3c18");
+  trap(ctx, 226, 250, 228, 278, 234, 276, "#b85a28");
+  px(ctx, 236, 230, 48, 6, "#d47840");
+
+  // Cord / leather wrap
+  trap(ctx, 254, 338, 206, 320, 214, 312, "#07070a");
+  trap(ctx, 256, 336, 210, 316, 218, 308, "#2a1810");
+  for (let i = 0; i < 9; i++) {
+    const y = 260 + i * 8;
+    const t = (y - 256) / 80;
+    const l = 210 + 8 * t;
+    const r = 316 - 8 * t;
+    px(ctx, l, y, r - l, 5, "#1a1008");
+    px(ctx, l + 4, y + 1, r - l - 10, 2, "#3a2418");
+    px(ctx, l + 8, y, 6, 5, "#4a3020");
+  }
+
+  // Lower wood + silver pommel
+  trap(ctx, 332, 372, 214, 312, 228, 300, "#07070a");
+  trap(ctx, 334, 370, 218, 308, 232, 296, "#6a3014");
+  trap(ctx, 338, 364, 232, 292, 242, 284, "#9a4820");
+  blk(ctx, 224, 364, 80, 36, "#2a2a32");
+  px(ctx, 230, 368, 68, 28, "#9a9aa4");
+  px(ctx, 236, 372, 56, 10, "#d0d0d8");
+  px(ctx, 240, 384, 48, 8, "#5a5a64");
+  px(ctx, 248, 370, 20, 6, "#ececf2");
 
   return c.toDataURL("image/png");
 }
@@ -334,7 +393,7 @@ export function drawPlasmaFlash() {
   return c.toDataURL("image/png");
 }
 
-const SPRITE_CACHE_VERSION = 16;
+const SPRITE_CACHE_VERSION = 17;
 let _cache = null;
 let _cacheVersion = -1;
 

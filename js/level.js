@@ -17,27 +17,27 @@ import {
 export const CELL = 4;
 
 const MAP = [
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  [1,2,0,0,0,0,1,0,3,0,0,0,3,0,1,0,0,3,0,4,1,1,1,1,1],
-  [1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1],
-  [1,0,1,3,0,0,0,0,0,0,5,0,1,0,0,0,0,3,1,0,1,1,1,1,1],
-  [1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1],
-  [1,0,0,3,0,0,0,0,1,0,1,0,0,3,0,0,0,0,3,0,1,1,1,1,1],
-  [1,1,1,1,6,1,1,0,1,0,1,1,1,0,1,1,6,1,1,1,1,1,1,1,1],
-  [1,0,3,0,0,1,4,0,0,3,0,0,0,0,3,1,0,0,3,0,6,7,7,7,1],
-  [1,0,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,0,1,7,7,7,1],
-  [1,0,0,0,3,0,0,0,0,0,3,0,0,3,0,0,0,0,0,0,1,7,7,7,1],
-  [1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,7,3,7,1],
-  [1,3,0,5,1,0,3,0,0,3,0,0,3,0,0,0,1,4,0,3,1,7,7,7,1],
-  [1,1,1,6,1,1,1,0,1,1,0,1,1,0,1,1,1,6,1,1,1,7,7,7,1],
-  [1,0,0,0,3,0,0,0,1,0,3,0,1,0,0,3,0,0,0,0,6,7,7,7,1],
-  [1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1],
-  [1,0,0,3,0,0,1,0,3,0,1,0,0,0,1,0,0,3,0,0,1,1,1,1,1],
-  [1,1,1,1,1,6,1,1,1,0,1,1,1,0,1,6,1,1,1,1,1,1,1,1,1],
-  [1,5,0,3,0,0,0,0,0,3,0,3,0,0,0,0,3,0,0,5,1,1,1,1,1],
-  [1,0,1,1,1,1,0,1,1,1,3,1,1,1,0,1,1,1,1,0,1,1,1,1,1],
-  [1,4,0,0,3,0,3,0,0,0,0,0,0,3,3,0,0,0,0,4,1,1,1,1,1],
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,2,0,0,0,0,1,0,3,0,0,0,3,0,1,0,0,3,0,4,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,3,0,0,0,0,0,0,5,0,1,0,0,0,0,3,1,0,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,3,0,0,0,0,1,0,1,0,0,3,0,0,0,0,3,0,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,6,1,1,0,1,0,1,1,1,0,1,1,6,1,1,1,1,7,7,7,7,7,7,7,7,7,1],
+  [1,0,3,0,0,1,4,0,0,3,0,0,0,0,3,1,0,0,3,0,6,7,7,7,7,7,7,7,7,7,1],
+  [1,0,1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,1],
+  [1,0,0,0,3,0,0,0,0,0,3,0,0,3,0,0,0,0,0,0,1,7,7,7,4,7,7,7,7,7,1],
+  [1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,6,7,7,3,7,7,3,7,7,7,1],
+  [1,3,0,5,1,0,3,0,0,3,0,0,3,0,0,0,1,4,0,3,1,7,7,7,7,7,7,7,7,7,1],
+  [1,1,1,6,1,1,1,0,1,1,0,1,1,0,1,1,1,6,1,1,1,7,7,7,7,7,7,7,7,7,1],
+  [1,0,0,0,3,0,0,0,1,0,3,0,1,0,0,3,0,0,0,0,6,7,7,7,7,7,7,7,7,7,1],
+  [1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,7,7,7,7,7,7,7,7,7,1],
+  [1,0,0,3,0,0,1,0,3,0,1,0,0,0,1,0,0,3,0,0,1,7,7,7,5,7,7,7,7,7,1],
+  [1,1,1,1,1,6,1,1,1,0,1,1,1,0,1,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,5,0,3,0,0,0,0,0,3,0,3,0,0,0,0,3,0,0,5,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,1,1,1,0,1,1,1,3,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1],
+  [1,4,0,0,3,0,3,0,0,0,0,0,0,3,3,0,0,0,0,4,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
 function makeDoorTexture() {
@@ -117,7 +117,7 @@ export class Level {
     const doorTex = makeDoorTexture();
     floorTex.repeat.set(this.cols, this.rows);
     ceilTex.repeat.set(this.cols, this.rows);
-    grassTex.repeat.set(3, 7);
+    grassTex.repeat.set(9, 10);
     dirtTex.repeat.set(2, 2);
 
     const wallMatA = new THREE.MeshLambertMaterial({ map: stoneTex });
@@ -169,7 +169,9 @@ export class Level {
 
     const gardenCells = [];
     const boxGeo = new THREE.BoxGeometry(CELL, CELL, CELL);
-    const doorGeo = new THREE.BoxGeometry(CELL * 0.92, CELL * 0.88, 0.35);
+    const leafW = CELL * 0.86;
+    const leafH = CELL * 0.86;
+    const leafT = 0.16;
 
     for (let z = 0; z < this.rows; z++) {
       for (let x = 0; x < this.cols; x++) {
@@ -211,12 +213,12 @@ export class Level {
             roughness: 0.45,
             envMapIntensity: 0.5,
           });
-          const frameL = new THREE.Mesh(new THREE.BoxGeometry(0.35, CELL, 0.45), frameMat);
+          const frameL = new THREE.Mesh(new THREE.BoxGeometry(0.42, CELL * 0.92, 0.42), frameMat);
           const frameR = frameL.clone();
-          const frameT = new THREE.Mesh(new THREE.BoxGeometry(CELL, 0.3, 0.45), frameMat);
-          frameL.position.set(wx - CELL * 0.4, CELL / 2, wz);
-          frameR.position.set(wx + CELL * 0.4, CELL / 2, wz);
-          frameT.position.set(wx, CELL * 0.92, wz);
+          const frameT = new THREE.Mesh(new THREE.BoxGeometry(CELL, 0.55, CELL), wallMatA);
+          frameL.position.set(wx - CELL * 0.42, CELL * 0.46, wz);
+          frameR.position.set(wx + CELL * 0.42, CELL * 0.46, wz);
+          frameT.position.set(wx, CELL * 0.975, wz);
           this.group.add(frameL, frameR, frameT);
 
           const wallL = this.grid[z]?.[x - 1] === 1;
@@ -225,23 +227,24 @@ export class Level {
           const wallD = this.grid[z + 1]?.[x] === 1;
           const alongZ = wallU && wallD && !(wallL && wallR);
           if (alongZ) {
-            frameL.position.set(wx, CELL / 2, wz - CELL * 0.4);
-            frameR.position.set(wx, CELL / 2, wz + CELL * 0.4);
-            frameL.rotation.y = Math.PI / 2;
-            frameR.rotation.y = Math.PI / 2;
-            frameT.rotation.y = Math.PI / 2;
+            frameL.position.set(wx, CELL * 0.46, wz - CELL * 0.42);
+            frameR.position.set(wx, CELL * 0.46, wz + CELL * 0.42);
           }
 
-          const mesh = new THREE.Mesh(doorGeo, doorMat);
-          mesh.position.set(wx, CELL * 0.44, wz);
-          if (alongZ || (!wallL && !wallR)) mesh.rotation.y = Math.PI / 2;
-          this.group.add(mesh);
+          const pivot = new THREE.Group();
+          pivot.position.set(wx, CELL * 0.44, wz);
+          const mesh = alongZ
+            ? new THREE.Mesh(new THREE.BoxGeometry(leafT, leafH, leafW), doorMat)
+            : new THREE.Mesh(new THREE.BoxGeometry(leafW, leafH, leafT), doorMat);
+          pivot.add(mesh);
+          this.group.add(pivot);
 
           this.doors.push({
             gx: x,
             gz: z,
             mesh,
-            baseY: CELL * 0.44,
+            pivot,
+            alongZ,
             open: 0,
             target: 0,
             wasOpen: false,
@@ -309,10 +312,14 @@ export class Level {
     grass.position.set(cx, 0.04, cz);
     this.group.add(grass);
 
-    const path = new THREE.Mesh(new THREE.PlaneGeometry(CELL * 0.7, d * 0.92), dirtMat);
+    const path = new THREE.Mesh(new THREE.PlaneGeometry(CELL * 0.78, d * 0.92), dirtMat);
     path.rotation.x = -Math.PI / 2;
     path.position.set(minX, 0.05, cz);
     this.group.add(path);
+    const pathArm = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.55, CELL * 0.55), dirtMat);
+    pathArm.rotation.x = -Math.PI / 2;
+    pathArm.position.set(cx, 0.05, cz);
+    this.group.add(pathArm);
 
     const sun = new THREE.DirectionalLight(0xfff4d2, 0.75);
     sun.position.set(cx + 8, 18, cz - 6);
@@ -362,14 +369,22 @@ export class Level {
     addTree(maxX - 0.4, minZ + 0.5, 1.15);
     addTree(maxX - 0.55, maxZ - 0.45, 1.0);
     addTree(minX + CELL * 0.85, cz - CELL * 0.9, 0.85);
+    addTree(cx + CELL, minZ + CELL * 0.6, 0.95);
+    addTree(cx + CELL * 1.6, cz + CELL, 1.05);
+    addTree(maxX - CELL * 0.7, cz, 1.22);
+    addTree(cx + CELL * 2.1, maxZ - CELL * 0.55, 0.9);
     addBush(minX + 1.1, minZ + 1.2, 1.1);
     addBush(maxX - 0.9, cz, 1.3);
     addBush(minX + 1.4, maxZ - 1.1, 0.95);
     addBush(cx + 0.8, minZ + 1.4, 0.8);
     addBush(cx - 0.2, maxZ - 1.3, 1.05);
+    addBush(cx + CELL * 1.2, cz - CELL * 0.4, 1.15);
+    addBush(maxX - 1.2, minZ + CELL, 0.9);
+    addBush(maxX - 0.7, cz + CELL, 1.2);
+    addBush(cx + CELL * 2.4, minZ + CELL * 0.8, 0.85);
 
     for (const cell of cells) {
-      if (cell.x === 22 && cell.z === 10) continue;
+      if (cell.x <= 22 && Math.abs(cell.z - 10) < 1) continue;
       if ((cell.x + cell.z) % 2 !== 0) continue;
       if (Math.abs(cell.wx - minX) < 0.8) continue;
       const fm = flowerMats[(cell.x + cell.z) % flowerMats.length];
@@ -406,8 +421,11 @@ export class Level {
         this._audio?.play("door");
       }
 
-      d.open += (d.target - d.open) * Math.min(1, dt * 5);
-      d.mesh.position.y = d.baseY + d.open * CELL * 0.95;
+      d.open += (d.target - d.open) * Math.min(1, dt * 7);
+      const slide = d.open * CELL * 0.95;
+      if (d.alongZ) d.mesh.position.z = slide;
+      else d.mesh.position.x = slide;
+      d.mesh.visible = d.open < 0.88;
       d.wasOpen = d.open > 0.55;
     }
   }

@@ -116,7 +116,9 @@ body {
 }
 
 #weapon-sprite.weapon-shotgun {
-  object-position: 62% 102%;
+  object-position: 50% 108%;
+  transform: scale(1.12);
+  transform-origin: 50% 100%;
 }
 
 #weapon-sprite.weapon-machinegun,
