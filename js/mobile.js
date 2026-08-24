@@ -68,7 +68,7 @@ export class MobileControls {
         this.input.interact = false;
       }, 80);
     });
-    this.btnWeapon.addEventListener("pointerdown", (e) => {
+    this.btnWeapon?.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       this.input._cycleWeapon = true;
     });

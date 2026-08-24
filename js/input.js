@@ -82,11 +82,6 @@ export class Input {
   _onKeyDown(e) {
     this.keys[e.code] = true;
     if (e.code === "Digit1") this.weaponSlot = 0;
-    if (e.code === "Digit2") this.weaponSlot = 1;
-    if (e.code === "Digit3") this.weaponSlot = 2;
-    if (e.code === "Digit4") this.weaponSlot = 3;
-    if (e.code === "Digit5") this.weaponSlot = 4;
-    if (e.code === "Digit6") this.weaponSlot = 5;
     if (e.code === "KeyR") {
       e.preventDefault();
       this.reload = true;

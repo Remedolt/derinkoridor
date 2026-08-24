@@ -15,101 +15,11 @@ export const WEAPONS = [
     reloadTime: 1.7,
     magSize: 8,
     infiniteReserve: false,
-    startReserve: 32,
+    startReserve: 48,
     className: "weapon-shotgun",
     spriteKey: "shotgun",
     sound: "shotgun",
     shake: 0.35,
-    pickupMsg: "POMPALI TÜFEK ALDIN!",
-  },
-  {
-    id: "pistol",
-    name: "TABANCA",
-    damage: 18,
-    pellets: 1,
-    spread: 0.018,
-    fireRate: 0.22,
-    reloadTime: 1.0,
-    magSize: 12,
-    infiniteReserve: true,
-    className: "weapon-pistol",
-    spriteKey: "pistol",
-    sound: "laser",
-    shake: 0.12,
-  },
-  {
-    id: "machinegun",
-    name: "MAKİNELİ TÜFEK",
-    damage: 9,
-    pellets: 1,
-    spread: 0.055,
-    fireRate: 0.09,
-    reloadTime: 2.0,
-    magSize: 40,
-    infiniteReserve: false,
-    startReserve: 80,
-    className: "weapon-machinegun",
-    spriteKey: "machinegun",
-    sound: "laser",
-    shake: 0.1,
-    pickupMsg: "MAKİNELİ TÜFEK ALDIN!",
-  },
-  {
-    id: "plasma",
-    name: "PLAZMA TÜFEĞİ",
-    damage: 42,
-    pellets: 1,
-    spread: 0.012,
-    fireRate: 0.48,
-    reloadTime: 1.5,
-    magSize: 15,
-    infiniteReserve: false,
-    startReserve: 30,
-    className: "weapon-plasma",
-    spriteKey: "plasma",
-    sound: "shotgun",
-    shake: 0.22,
-    hitColor: 0x44ffcc,
-    pickupMsg: "PLAZMA TÜFEĞİ ALDIN!",
-  },
-  {
-    id: "rocket",
-    name: "ROKET FIRLATICI",
-    damage: 95,
-    pellets: 1,
-    spread: 0.02,
-    fireRate: 1.15,
-    reloadTime: 2.2,
-    magSize: 4,
-    infiniteReserve: false,
-    startReserve: 12,
-    className: "weapon-rocket",
-    spriteKey: "rocket",
-    sound: "explosion",
-    shake: 0.48,
-    hitColor: 0xff6622,
-    maxRange: 55,
-    splash: 2.4,
-    pickupMsg: "ROKET FIRLATICI ALDIN!",
-  },
-  {
-    id: "flamethrower",
-    name: "ATEŞ PÜSKÜRTÜCÜ",
-    damage: 7,
-    pellets: 5,
-    spread: 0.16,
-    fireRate: 0.07,
-    reloadTime: 1.8,
-    magSize: 60,
-    infiniteReserve: false,
-    startReserve: 120,
-    className: "weapon-flamethrower",
-    spriteKey: "flamethrower",
-    sound: "laser",
-    shake: 0.08,
-    hitColor: 0xff8833,
-    maxRange: 7.5,
-    pickupMsg: "ATEŞ PÜSKÜRTÜCÜ ALDIN!",
   },
 ];
 
@@ -151,6 +61,7 @@ export class Weapons {
   }
 
   switchTo(slot) {
+    if (WEAPONS.length <= 1) return;
     if (slot < 0 || slot >= WEAPONS.length || slot === this.index) return;
     this.index = slot;
     this.reloading = false;
@@ -164,7 +75,7 @@ export class Weapons {
   }
 
   cycle() {
-    this.switchTo((this.index + 1) % WEAPONS.length);
+    /* tek silah */
   }
 
   addAmmo(amount) {
