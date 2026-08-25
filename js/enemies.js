@@ -17,6 +17,13 @@ function std(color, opts = {}) {
   });
 }
 
+function lamb(color, opts = {}) {
+  return new THREE.MeshLambertMaterial({
+    color,
+    map: opts.map || null,
+  });
+}
+
 function glow(color, _intensity = 1.2) {
   // MeshBasicMaterial: bloom still picks up bright color, but no HDR
   // emissive + PointLight combo that freezes UnrealBloomPass on dispose.
@@ -24,20 +31,46 @@ function glow(color, _intensity = 1.2) {
 }
 
 const _skinCache = new Map();
-function skin(key, base, speck, count = 110) {
+function skin(key, base, speck, count = 110, linear = false) {
   if (_skinCache.has(key)) return _skinCache.get(key);
+  const size = linear ? 128 : 64;
   const c = document.createElement("canvas");
-  c.width = c.height = 64;
+  c.width = c.height = size;
   const ctx = c.getContext("2d");
   ctx.fillStyle = base;
-  ctx.fillRect(0, 0, 64, 64);
+  ctx.fillRect(0, 0, size, size);
   ctx.fillStyle = speck;
   for (let i = 0; i < count; i++) {
-    ctx.fillRect((Math.random() * 64) | 0, (Math.random() * 64) | 0, 1 + ((Math.random() * 3) | 0), 1);
+    ctx.fillRect((Math.random() * size) | 0, (Math.random() * size) | 0, 1 + ((Math.random() * 3) | 0), 1);
+  }
+  if (linear) {
+    for (let i = 0; i < 28; i++) {
+      ctx.fillStyle = `rgba(255,210,90,${0.1 + Math.random() * 0.18})`;
+      ctx.beginPath();
+      ctx.ellipse(
+        Math.random() * size,
+        Math.random() * size,
+        4 + Math.random() * 10,
+        2 + Math.random() * 4,
+        Math.random() * Math.PI,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
+    for (let i = 0; i < 14; i++) {
+      ctx.strokeStyle = `rgba(40,18,4,${0.18 + Math.random() * 0.22})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * size, Math.random() * size);
+      ctx.lineTo(Math.random() * size, Math.random() * size);
+      ctx.stroke();
+    }
   }
   const tex = new THREE.CanvasTexture(c);
-  tex.magFilter = THREE.NearestFilter;
-  tex.minFilter = THREE.NearestFilter;
+  tex.magFilter = linear ? THREE.LinearFilter : THREE.NearestFilter;
+  tex.minFilter = linear ? THREE.LinearMipmapLinearFilter : THREE.NearestFilter;
+  tex.generateMipmaps = linear;
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   _skinCache.set(key, tex);
@@ -319,72 +352,101 @@ function buildBrute() {
   return g;
 }
 
-/** Gold-Flayer — golden melee predator with living flame */
+/** Gold-Flayer — golden melee predator with a living furnace */
 function buildGoldFlayer() {
   const g = new THREE.Group();
-  const gold = std(0xd4a017, { roughness: 0.24, metalness: 0.88, map: skin("gld", "#d4a017", "#8a5a10", 70) });
-  const bronze = std(0x8a5a12, { roughness: 0.38, metalness: 0.74 });
+  const hide = lamb(0xd4a024, { map: skin("gld-hide", "#d4a024", "#6a3a08", 220, true) });
+  const plate = lamb(0xb07818, { map: skin("gld-plate", "#b07818", "#4a2808", 160, true) });
+  const bronze = lamb(0x8a5a14, { map: skin("gld-brz", "#8a5a14", "#3a2008", 120, true) });
+  const soot = lamb(0x2a1810);
   const flame = glow(0xff7722);
+  const hot = glow(0xffcc44);
 
-  add(g, new THREE.CapsuleGeometry(0.36, 0.78, 5, 10), gold, 0, 1.18, 0);
-  add(g, new THREE.BoxGeometry(0.6, 0.5, 0.32), bronze, 0, 1.38, 0.14);
-  add(g, new THREE.BoxGeometry(0.72, 0.7, 0.06), gold, 0, 1.25, 0.38).rotation.x = 0.2;
+  add(g, new THREE.SphereGeometry(0.32, 10, 8), hide, 0, 0.92, 0.04).scale.set(1.15, 0.85, 1.05);
+  add(g, new THREE.CapsuleGeometry(0.38, 0.72, 6, 12), hide, 0, 1.28, 0.02);
+  add(g, new THREE.SphereGeometry(0.36, 10, 8), hide, 0, 1.62, 0.06).scale.set(1.25, 0.7, 1.1);
 
-  const core = add(g, new THREE.SphereGeometry(0.18, 9, 8), flame, 0, 1.22, 0.24);
+  add(g, new THREE.BoxGeometry(0.78, 0.58, 0.16), plate, 0, 1.42, 0.28);
+  add(g, new THREE.BoxGeometry(0.22, 0.5, 0.12), bronze, -0.42, 1.44, 0.22);
+  add(g, new THREE.BoxGeometry(0.22, 0.5, 0.12), bronze, 0.42, 1.44, 0.22);
+  add(g, new THREE.BoxGeometry(0.7, 0.08, 0.18), bronze, 0, 1.72, 0.3);
+  add(g, new THREE.BoxGeometry(0.58, 0.1, 0.28), bronze, 0, 1.88, 0.08);
+  add(g, new THREE.BoxGeometry(0.52, 0.42, 0.08), plate, 0, 1.38, -0.32);
+  for (const sy of [-0.12, 0.08]) {
+    add(g, new THREE.BoxGeometry(0.62, 0.05, 0.1), bronze, 0, 1.4 + sy, 0.34);
+  }
+
+  const rim = add(g, new THREE.TorusGeometry(0.2, 0.045, 8, 16), bronze, 0, 1.36, 0.36);
+  rim.rotation.x = Math.PI / 2;
+  const core = add(g, new THREE.SphereGeometry(0.2, 12, 10), flame, 0, 1.36, 0.38);
   core.name = "furnace";
+  add(g, new THREE.SphereGeometry(0.1, 8, 7), hot, 0, 1.36, 0.46);
 
-  add(g, new THREE.SphereGeometry(0.28, 9, 7), gold, 0, 1.98, 0);
-  const mask = add(g, new THREE.BoxGeometry(0.42, 0.28, 0.12), bronze, 0, 2.0, -0.2);
-  mask.rotation.x = -0.15;
-  add(g, new THREE.ConeGeometry(0.16, 0.38, 6), bronze, 0, 2.32, 0);
-  add(g, new THREE.ConeGeometry(0.07, 0.2, 4), bronze, -0.14, 2.22, 0.02).rotation.z = 0.55;
-  add(g, new THREE.ConeGeometry(0.07, 0.2, 4), bronze, 0.14, 2.22, 0.02).rotation.z = -0.55;
+  add(g, new THREE.SphereGeometry(0.32, 12, 10), hide, 0, 2.02, -0.04);
+  add(g, new THREE.BoxGeometry(0.5, 0.22, 0.14), bronze, 0, 2.04, -0.26);
+  add(g, new THREE.BoxGeometry(0.16, 0.12, 0.1), bronze, 0, 2.18, -0.3);
+  const horn = add(g, new THREE.ConeGeometry(0.11, 0.46, 7), plate, 0, 2.42, -0.02);
+  horn.rotation.x = -0.15;
+  add(g, new THREE.ConeGeometry(0.055, 0.22, 5), bronze, -0.16, 2.28, 0.02).rotation.z = 0.55;
+  add(g, new THREE.ConeGeometry(0.055, 0.22, 5), bronze, 0.16, 2.28, 0.02).rotation.z = -0.55;
 
-  const eyeGlow = glow(0xffee66);
-  const eyeL = add(g, new THREE.SphereGeometry(0.065, 7, 6), eyeGlow, -0.11, 2.02, -0.24);
-  const eyeR = add(g, new THREE.SphereGeometry(0.065, 7, 6), eyeGlow, 0.11, 2.02, -0.24);
+  add(g, new THREE.SphereGeometry(0.09, 8, 7), soot, -0.12, 2.06, -0.3);
+  add(g, new THREE.SphereGeometry(0.09, 8, 7), soot, 0.12, 2.06, -0.3);
+  const eyeL = add(g, new THREE.SphereGeometry(0.055, 8, 7), glow(0xfff2cc), -0.12, 2.06, -0.34);
+  const eyeR = add(g, new THREE.SphereGeometry(0.055, 8, 7), glow(0xfff2cc), 0.12, 2.06, -0.34);
   eyeL.name = "eyeL";
   eyeR.name = "eyeR";
 
-  const maw = add(g, new THREE.BoxGeometry(0.24, 0.11, 0.16), glow(0xff4400), 0, 1.84, -0.24);
+  const jaw = add(g, new THREE.BoxGeometry(0.36, 0.1, 0.22), bronze, 0, 1.86, -0.22);
+  jaw.name = "jaw";
+  const maw = add(g, new THREE.BoxGeometry(0.28, 0.12, 0.16), glow(0xff3300), 0, 1.9, -0.32);
   maw.name = "maw";
+  for (const sx of [-0.1, 0.1]) {
+    const fang = add(jaw, new THREE.ConeGeometry(0.03, 0.12, 5), plate, sx, -0.08, -0.08);
+    fang.rotation.x = Math.PI;
+  }
 
   const flames = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 7; i++) {
     const orb = add(
       g,
-      new THREE.SphereGeometry(0.07 + (i % 3) * 0.02, 6, 5),
-      glow(i % 2 ? 0xffaa33 : 0xff5500),
-      (i - 2.5) * 0.11,
-      1.5 + (i % 3) * 0.14,
-      0.3 + (i % 2) * 0.05
+      new THREE.SphereGeometry(0.06 + (i % 3) * 0.02, 7, 6),
+      glow(i % 2 ? 0xffaa33 : 0xff4400),
+      (i - 3) * 0.1,
+      1.48 + (i % 3) * 0.1,
+      0.48
     );
     orb.name = `flame${i}`;
     flames.push(orb);
   }
-  for (const sx of [-0.18, 0.18, 0]) {
-    const mane = add(g, new THREE.ConeGeometry(0.08, 0.36, 5), flame, sx, 2.15, 0.18);
-    mane.rotation.x = 0.7;
+  for (const sx of [-0.2, 0, 0.2]) {
+    const mane = add(g, new THREE.ConeGeometry(0.07, 0.38, 6), flame, sx, 2.18, 0.2);
+    mane.rotation.x = 0.85;
   }
   g.userData.flames = flames;
 
   const arms = [];
   for (const sx of [-1, 1]) {
     const arm = new THREE.Group();
-    arm.position.set(sx * 0.5, 1.48, 0);
-    add(arm, new THREE.CapsuleGeometry(0.085, 0.48, 3, 6), gold, 0, -0.26, 0);
-    const blade = add(arm, new THREE.BoxGeometry(0.07, 0.62, 0.14), bronze, sx * 0.05, -0.74, -0.04);
-    blade.rotation.z = sx * 0.12;
-    add(arm, new THREE.ConeGeometry(0.07, 0.28, 5), bronze, sx * 0.05, -1.12, -0.04).rotation.x = Math.PI;
-    add(arm, new THREE.SphereGeometry(0.075, 6, 5), flame, sx * 0.05, -1.22, -0.04);
+    arm.position.set(sx * 0.52, 1.58, 0.02);
+    add(arm, new THREE.SphereGeometry(0.14, 8, 7), plate, 0, 0, 0);
+    add(arm, new THREE.CapsuleGeometry(0.1, 0.38, 4, 8), hide, sx * 0.04, -0.28, 0);
+    add(arm, new THREE.SphereGeometry(0.1, 7, 6), bronze, sx * 0.05, -0.52, 0);
+    add(arm, new THREE.CapsuleGeometry(0.085, 0.32, 4, 8), hide, sx * 0.06, -0.72, -0.04);
+    const blade = add(arm, new THREE.BoxGeometry(0.08, 0.7, 0.16), bronze, sx * 0.06, -1.12, -0.06);
+    blade.rotation.z = sx * 0.1;
+    add(arm, new THREE.ConeGeometry(0.08, 0.28, 6), plate, sx * 0.06, -1.52, -0.06).rotation.x = Math.PI;
+    add(arm, new THREE.SphereGeometry(0.07, 6, 5), flame, sx * 0.06, -1.62, -0.06);
     g.add(arm);
     arms.push(arm);
   }
   g.userData.arms = arms;
 
   for (const sx of [-1, 1]) {
-    add(g, new THREE.CapsuleGeometry(0.11, 0.42, 3, 6), gold, sx * 0.22, 0.55, 0);
-    add(g, new THREE.BoxGeometry(0.2, 0.14, 0.3), bronze, sx * 0.22, 0.1, 0.05);
+    add(g, new THREE.CapsuleGeometry(0.13, 0.36, 4, 8), hide, sx * 0.2, 0.58, 0.02);
+    add(g, new THREE.SphereGeometry(0.12, 7, 6), bronze, sx * 0.2, 0.36, 0.04);
+    add(g, new THREE.CapsuleGeometry(0.11, 0.28, 4, 8), hide, sx * 0.2, 0.18, 0.06);
+    add(g, new THREE.BoxGeometry(0.24, 0.12, 0.36), plate, sx * 0.2, 0.05, 0.08);
   }
 
   g.userData.idleKind = "goldflayer";
@@ -705,6 +767,8 @@ class Enemy {
         const s = 1 + Math.sin(phase * 2.5) * 0.12;
         furnace.scale.setScalar(s);
       }
+      const jaw = this.mesh.getObjectByName("jaw");
+      if (jaw) jaw.rotation.x = Math.sin(phase * 2.2) * 0.1;
       ["eyeL", "eyeR", "maw"].forEach((n) => {
         const o = this.mesh.getObjectByName(n);
         if (o?.material) o.material.emissiveIntensity = 1.4 + Math.sin(phase * 4) * 0.45;
