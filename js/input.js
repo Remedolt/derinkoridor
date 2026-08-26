@@ -41,12 +41,11 @@ export class Input {
   }
 
   detectTouch() {
-    this.isTouch =
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0 ||
-      window.matchMedia("(pointer: coarse)").matches;
-    document.body.classList.toggle("is-touch", this.isTouch);
-    return this.isTouch;
+    // Desktop WASD + mouse only. Touch laptops report maxTouchPoints > 0
+    // and would otherwise enable virtual joysticks and ignore the keyboard.
+    this.isTouch = false;
+    document.body.classList.remove("is-touch");
+    return false;
   }
 
   attach() {
@@ -69,7 +68,6 @@ export class Input {
   }
 
   requestPointerLock() {
-    if (this.isTouch) return;
     this.canvas.requestPointerLock?.();
   }
 
@@ -117,7 +115,6 @@ export class Input {
 
   /** Call once per frame after reading edges */
   beginFrame() {
-    // Desktop movement
     let mx = 0;
     let mz = 0;
     if (this.keys["KeyW"] || this.keys["ArrowUp"]) mz -= 1;
@@ -125,15 +122,10 @@ export class Input {
     if (this.keys["KeyA"] || this.keys["ArrowLeft"]) mx -= 1;
     if (this.keys["KeyD"] || this.keys["ArrowRight"]) mx += 1;
 
-    // Mobile sticks write into moveX/moveZ/lookX/lookY; blend with keys
-    if (!this.isTouch) {
-      this.moveX = mx;
-      this.moveZ = mz;
-      this.lookX = this.mouseDelta.x;
-      this.lookY = this.mouseDelta.y;
-    } else {
-      // keep mobile stick values; add nothing from mouse
-    }
+    this.moveX = mx;
+    this.moveZ = mz;
+    this.lookX = this.mouseDelta.x;
+    this.lookY = this.mouseDelta.y;
 
     const len = Math.hypot(this.moveX, this.moveZ);
     if (len > 1) {
@@ -161,10 +153,8 @@ export class Input {
   endFrame() {
     this.mouseDelta.x = 0;
     this.mouseDelta.y = 0;
-    if (!this.isTouch) {
-      this.lookX = 0;
-      this.lookY = 0;
-    }
+    this.lookX = 0;
+    this.lookY = 0;
     this.weaponSlot = null;
   }
 }

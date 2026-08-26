@@ -26,24 +26,24 @@ export class Game {
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: false,
+      antialias: true,
       powerPreference: "high-performance",
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
     this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.12;
-    this.renderer.setClearColor(0x1a1410);
+    this.renderer.toneMappingExposure = 1.18;
+    this.renderer.setClearColor(0x16120e);
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x1c1814, 0.012);
+    this.scene.fog = new THREE.Fog(0x16120e, 10, 78);
 
     this.camera = new THREE.PerspectiveCamera(
-      70,
+      68,
       window.innerWidth / window.innerHeight,
       0.1,
-      140
+      110
     );
 
     const envScene = new THREE.Scene();
@@ -73,14 +73,12 @@ export class Game {
     this.input.detectTouch();
     this.input.attach();
     this.input.onUnlock = () => {
-      if (this.state === "playing" && !this.input.isTouch) this.pause();
+      if (this.state === "playing") this.pause();
     };
     window.addEventListener("resize", this._onResize);
     window.addEventListener("keydown", this._onEsc);
     this.canvas.addEventListener("click", () => {
-      if (this.state === "playing" && !this.input.isTouch) {
-        this.input.requestPointerLock();
-      }
+      if (this.state === "playing") this.input.requestPointerLock();
     });
 
     this.ui.showStart(() => this.start());
@@ -114,15 +112,12 @@ export class Game {
     this.state = "playing";
     this.ui.showPlaying();
     requestAnimationFrame(() => this.audio.startMusic());
-    if (this.input.isTouch) this.mobile.enable();
-    else {
-      this.mobile.disable();
-      const lock = () => {
-        if (this.state === "playing") this.input.requestPointerLock();
-      };
-      if (fs && typeof fs.then === "function") fs.then(lock).catch(lock);
-      else lock();
-    }
+    this.mobile.disable();
+    const lock = () => {
+      if (this.state === "playing") this.input.requestPointerLock();
+    };
+    if (fs && typeof fs.then === "function") fs.then(lock).catch(lock);
+    else lock();
   }
 
   _resetLevel() {
@@ -214,7 +209,7 @@ export class Game {
     this.state = "playing";
     this.ui.hidePause();
     this.audio.resumeMusic();
-    if (!this.input.isTouch) this.input.requestPointerLock();
+    this.input.requestPointerLock();
   }
 
   _enterFullscreen() {

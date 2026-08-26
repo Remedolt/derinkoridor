@@ -132,8 +132,7 @@ export class UI {
     }
     this.msg.innerHTML = `
       Üç dalga düşmanı temizle. Tesis labirentinden sağ çık.<br />
-      <span class="desktop-hint">WASD + Fare · Sol tık Ateş · R Şarjör · Boşluk Zıpla · E Kapı · ESC Duraklat</span>
-      <span class="mobile-hint">Çift joystick · Ateş / Zıpla / Şarjör / KAPI · DURDUR</span>
+      <span class="desktop-hint">WASD hareket · Fare bakış · Sol tık ateş · R şarjör · Boşluk zıpla · E kapı · ESC duraklat</span>
     `;
     if (this.nameRow) this.nameRow.classList.remove("hidden");
     if (this.nameInput && !this.nameInput.value) this.nameInput.value = "Oyuncu";
