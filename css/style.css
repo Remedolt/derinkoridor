@@ -710,20 +710,26 @@ body {
   margin: 0 auto;
 }
 
-#btn-menu-fullscreen {
+#btn-menu-fullscreen,
+.home-link {
   font-family: "Press Start 2P", monospace;
   font-size: 0.5rem;
   padding: 0.85rem 1.25rem;
   color: #ffcc88;
   background: transparent;
   border: 2px solid #8a6a40;
+  text-decoration: none;
+  text-align: center;
   cursor: pointer;
   pointer-events: auto;
+  box-sizing: border-box;
   transition: border-color 0.1s, color 0.1s, box-shadow 0.1s;
 }
 
 #btn-menu-fullscreen:hover,
-#btn-menu-fullscreen:active {
+#btn-menu-fullscreen:active,
+.home-link:hover,
+.home-link:focus-visible {
   color: #ffe0b0;
   border-color: #ff8844;
   box-shadow: 0 0 16px rgba(255, 120, 40, 0.35);
@@ -734,36 +740,8 @@ body {
   display: none;
 }
 
-.home-link {
-  position: relative;
-  z-index: 2;
-  display: none;
-  width: min(22rem, calc(100% - 2rem));
-  margin-top: 0.9rem;
-  font-family: "Press Start 2P", monospace;
-  font-size: 0.5rem;
-  line-height: 1.45;
-  padding: 0.85rem 1.25rem;
-  color: #ffcc88;
-  background: rgba(12, 10, 8, 0.82);
-  border: 2px solid #8a6a40;
-  text-decoration: none;
-  text-align: center;
-  cursor: pointer;
-  pointer-events: auto;
-  box-sizing: border-box;
-  transition: border-color 0.1s, color 0.1s, box-shadow 0.1s;
-}
-
 .overlay.start-screen .home-link {
   display: block;
-}
-
-.home-link:hover,
-.home-link:focus-visible {
-  color: #ffe0b0;
-  border-color: #ff8844;
-  box-shadow: 0 0 16px rgba(255, 120, 40, 0.35);
 }
 
 /* —— Mobile —— */
