@@ -375,6 +375,7 @@ body {
   inset: 0;
   z-index: 30;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: auto;
@@ -730,6 +731,31 @@ body {
 
 .overlay:not(.start-screen) #btn-menu-fullscreen {
   display: none;
+}
+
+.home-link {
+  display: none;
+  position: relative;
+  z-index: 2;
+  margin-top: 1.15rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: #ff8844;
+  text-decoration: none;
+  text-shadow: 0 0 10px rgba(255, 100, 40, 0.45), 1px 1px 0 #200800;
+  pointer-events: auto;
+}
+
+.overlay.start-screen .home-link {
+  display: inline-block;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+  color: #ffcc88;
+  text-decoration: underline;
+  text-underline-offset: 0.28em;
 }
 
 /* —— Mobile —— */
