@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#1a1410" />
+  <title>Derin Koridor — Retro FPS</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css?v=35" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="game-root">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="hud" class="hidden">
+      <div id="pickup-msg"></div>
+      <div id="crosshair"></div>
+      <div id="damage-vignette"></div>
+
+      <div id="weapon-view">
+        <img id="weapon-sprite" class="weapon-shotgun" alt="" draggable="false" />
+        <img id="muzzle-flash" alt="" draggable="false" />
+      </div>
+
+      <div class="hud-bar">
+        <div class="hud-stat" id="hud-ammo">
+          <span class="label">MERMİ</span>
+          <span class="value red" id="ammo-value">8</span>
+        </div>
+        <div class="hud-stat" id="hud-hp">
+          <span class="label">CAN</span>
+          <span class="value red" id="hp-value">100</span>
+        </div>
+        <div class="hud-face" id="hud-face" data-pain="0" title="Operatör">
+          <div class="face-pixel"><span class="face-mouth"></span></div>
+        </div>
+        <div class="hud-stat" id="hud-armor">
+          <span class="label">ZIRH</span>
+          <span class="value cyan" id="armor-value">0</span>
+        </div>
+        <div class="hud-stat" id="hud-score">
+          <span class="label">SKOR</span>
+          <span class="value red" id="score-value">0</span>
+        </div>
+      </div>
+      <div class="hud-weapon-name" id="weapon-value">POMPALI TÜFEK</div>
+      <div class="hud-hint" id="hud-hint">WASD · Fare · Sol tık ateş · E kapı · R şarjör · ESC</div>
+    </div>
+
+    <div id="pause-overlay" class="pause-overlay hidden" aria-hidden="true">
+      <div class="pause-card">
+        <h2>Duraklatıldı</h2>
+        <p class="pause-sub">ESC veya buton ile devam et</p>
+        <button type="button" id="btn-resume" class="pause-btn pause-btn-primary">Devam Et</button>
+        <button type="button" id="btn-fullscreen" class="pause-btn pause-btn-ghost">Tam ekran</button>
+        <button type="button" id="btn-quit" class="pause-btn pause-btn-quit">Oyundan Çık</button>
+      </div>
+    </div>
+
+    <div id="overlay" class="overlay start-screen">
+      <img id="start-bg" class="start-bg" src="img/start-bg.jpg" alt="" draggable="false" decoding="async" fetchpriority="low" />
+      <div class="overlay-fx" aria-hidden="true">
+        <div class="fx-scanlines"></div>
+        <div class="fx-particles"></div>
+      </div>
+      <div class="overlay-panel">
+        <h1 id="overlay-title">DERİN KORİDOR</h1>
+        <p id="overlay-sub" class="hidden"></p>
+        <p id="overlay-msg" class="overlay-msg">
+          Üç dalga düşmanı temizle. Tesis labirentinden sağ çık.<br />
+      <span class="desktop-hint">WASD hareket · Fare bakış · Sol tık ateş · R şarjör · Boşluk zıpla · E kapı · ESC duraklat</span>
+        </p>
+        <div id="name-row" class="name-row">
+          <label for="player-name">İSİM</label>
+          <input id="player-name" type="text" maxlength="16" value="Oyuncu" autocomplete="nickname" spellcheck="false" />
+        </div>
+        <div id="scoreboard" class="scoreboard"></div>
+        <div class="start-actions">
+          <button id="btn-start" type="button">TESİSE GİR</button>
+          <button id="btn-menu-fullscreen" type="button">TAM EKRAN</button>
+          <a
+            id="home-link"
+            class="home-link"
+            href="https://www.oyuncum.site/"
+            target="_top"
+            rel="noopener noreferrer"
+          >ANA SAYFA</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobile-ui" class="hidden" aria-hidden="true">
+      <div id="stick-move" class="stick-zone">
+        <div class="stick-base"><div class="stick-knob"></div></div>
+      </div>
+      <div id="stick-look" class="stick-zone">
+        <div class="stick-base"><div class="stick-knob"></div></div>
+      </div>
+      <div id="mobile-buttons">
+        <button type="button" id="btn-fire" class="mob-btn fire">ATEŞ</button>
+        <button type="button" id="btn-jump" class="mob-btn">ZIPLA</button>
+        <button type="button" id="btn-reload" class="mob-btn">ŞARJÖR</button>
+        <button type="button" id="btn-door" class="mob-btn">KAPI</button>
+        <button type="button" id="btn-pause" class="mob-btn">DURDUR</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js?v=35"></script>
+</body>
+</html>
