@@ -140,12 +140,12 @@ body {
 
 #weapon-view {
   position: absolute;
-  left: 50%;
+  right: 0;
   bottom: 4.4rem;
-  width: min(98vw, 740px);
-  height: min(68vw, 460px);
-  transform: translateX(-42%);
-  transform-origin: 70% 100%;
+  width: min(38vw, 320px);
+  height: min(28vw, 240px);
+  transform: none;
+  transform-origin: 100% 100%;
   transition: transform 0.05s linear;
   z-index: 12;
 }
@@ -156,30 +156,30 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: 68% 100%;
+  object-position: 100% 100%;
   image-rendering: auto;
   filter:
-    drop-shadow(0 18px 22px rgba(0, 0, 0, 0.7))
-    drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.75))
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 #weapon-sprite.weapon-pistol {
-  object-position: 78% 108%;
+  object-position: 100% 110%;
   transform: scale(0.82);
-  transform-origin: 80% 100%;
+  transform-origin: 100% 100%;
 }
 
 #weapon-sprite.weapon-shotgun {
-  object-position: 52% 104%;
-  transform: scale(1.18);
-  transform-origin: 50% 100%;
+  object-position: 100% 108%;
+  transform: scale(1.0);
+  transform-origin: 100% 100%;
 }
 
 #weapon-sprite.weapon-machinegun,
 #weapon-sprite.weapon-plasma,
 #weapon-sprite.weapon-rocket,
 #weapon-sprite.weapon-flamethrower {
-  object-position: 58% 100%;
+  object-position: 100% 100%;
 }
 
 #muzzle-flash {
@@ -197,7 +197,7 @@ body {
 }
 
 #weapon-view.recoil {
-  transform: translateX(-42%) translateY(20px) scale(0.965) rotate(-1.2deg);
+  transform: translateY(18px) scale(0.97) rotate(-1deg);
 }
 
 #weapon-view.muzzle #muzzle-flash {
@@ -205,7 +205,7 @@ body {
 }
 
 #weapon-view.bob {
-  transform: translateX(calc(-42% + var(--bob-x, 0px))) translateY(var(--bob-y, 0px));
+  transform: translateX(var(--bob-x, 0px)) translateY(var(--bob-y, 0px));
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1062,8 +1062,8 @@ body {
 
   #weapon-view {
     bottom: 4.0rem;
-    width: 90vw;
-    height: 52vw;
+    width: 52vw;
+    height: 34vw;
   }
 
   .hud-weapon-name { bottom: calc(3.85rem + env(safe-area-inset-bottom)); }
